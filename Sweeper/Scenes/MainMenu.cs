@@ -3,29 +3,30 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace Sweeper
 {
-	public class MainMenu : Scene
+    public class MainMenu : Scene
 	{
 		private readonly ISceneManager _sceneManager;
+        private readonly IInputManager _inputManager;
 		private readonly ContentManager _contentManager;
 		private readonly List<string> _menuOptions;
 		private int _selectedOption;
 		private SpriteFont _menuFont;
 
-		public MainMenu(ISceneManager sceneManager, ContentManager contentManager)
+		public MainMenu(ISceneManager sceneManager, IInputManager inputManager, ContentManager contentManager)
 		{
 			_sceneManager = sceneManager;
+            _inputManager = inputManager;
 			_contentManager = contentManager;
 			_menuOptions = new List<string> { "New Game", "Load Game", "Options", "Exit" };
 			_selectedOption = 0;
 		}
 
 		public override void Initialise()
-		{
-			_menuFont = _contentManager.Load<SpriteFont>("MainMenu");
+		{            
+            _menuFont = _contentManager.Load<SpriteFont>("MainMenu");
 		}
 
 		public override void Draw(GameTime gameTime, GraphicsDevice graphicsDevice)
@@ -39,7 +40,7 @@ namespace Sweeper
 					spriteBatch.DrawString(
 						_menuFont, 
 						_menuOptions[i], 
-						new Vector2(100, 100 * i), 
+						new Vector2(100, 50 + (100 * i)), 
 						i == _selectedOption ? Color.Yellow : Color.White);
 				}				
 				spriteBatch.End();
@@ -48,13 +49,13 @@ namespace Sweeper
 
 		public override void Update(GameTime gameTime)
 		{
-			var keys = Keyboard.GetState().GetPressedKeys();
+			
 
-			if (keys.Contains(Keys.Up))
+			if (_inputManager.WasInput(GameInput.MenuUp))
 				_selectedOption = _selectedOption.Decrement(0, _menuOptions.Count - 1);
-			if (keys.Contains(Keys.Down))
+			if (_inputManager.WasInput(GameInput.MenuDown))
 				_selectedOption = _selectedOption.Increment(0, _menuOptions.Count - 1);
-			if (keys.Contains(Keys.Enter))
+			if (_inputManager.WasInput(GameInput.MenuSelect))
 				ExecuteOption(_selectedOption);
 		}
 
@@ -63,48 +64,12 @@ namespace Sweeper
 			switch(optionIndex)
 			{
 				case 0:
-					_sceneManager.StartScene<Scene2>();
+					_sceneManager.StartScene<MainScene>();
 					break;
 				case 3:
 					_sceneManager.Exit();
 					break;
 			}
-		}
-	}
-
-	public static class IntegerExtensions
-	{
-		public static int Decrement(this int i, int min, int max)
-		{
-			int returnValue = i - 1;
-			return returnValue < min ? max : returnValue;
-		}
-
-		public static int Increment(this int i, int min, int max)
-		{
-			int returnValue = i + 1;
-			return returnValue > max ? min : returnValue;
-		}
-	}
-
-	public class Scene2 : Scene
-	{
-		private readonly ISceneManager _sceneManager;
-
-		public Scene2(ISceneManager sceneManager)
-		{
-			_sceneManager = sceneManager;
-		}
-
-		public override void Draw(GameTime gameTime, GraphicsDevice graphicsDevice)
-		{
-			graphicsDevice.Clear(Color.Olive);
-		}
-
-		public override void Update(GameTime gameTime)
-		{
-			if (Keyboard.GetState().IsKeyDown(Keys.Q))
-				_sceneManager.EndScene();
 		}
 	}
 }

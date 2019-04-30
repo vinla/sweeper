@@ -1,8 +1,6 @@
 ﻿using Autofac;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace Sweeper
 {
@@ -10,6 +8,7 @@ namespace Sweeper
     {
         private readonly GraphicsDeviceManager _graphics;
 		private readonly SceneManager _sceneManager;
+        private readonly InputManager _inputManager;
 		private ContainerBuilder _containerBuilder;
 		private IContainer _container;
         
@@ -17,13 +16,16 @@ namespace Sweeper
         {
             _graphics = new GraphicsDeviceManager(this);
 			_sceneManager = new SceneManager(this);
+            _inputManager = new InputManager();
 			_containerBuilder = new ContainerBuilder();
-			_containerBuilder.RegisterInstance<ISceneManager>(_sceneManager);			
+			_containerBuilder.RegisterInstance<ISceneManager>(_sceneManager);
+            _containerBuilder.RegisterInstance<IInputManager>(_inputManager);
             Content.RootDirectory = "Content";
         }
         
         protected override void Initialize()
         {
+            SetResolution(1280, 720);
 			_containerBuilder.RegisterModule<SceneModule>();
 			_containerBuilder.RegisterInstance(Content);
 			_container = _containerBuilder.Build();
@@ -42,8 +44,12 @@ namespace Sweeper
 
         protected override void Update(GameTime gameTime)
         {
+            _inputManager.EarlyUpdate(gameTime);
+
             _sceneManager.CurrentScene.Update(gameTime);
             base.Update(gameTime);
+
+            _inputManager.LateUpdate(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -51,6 +57,14 @@ namespace Sweeper
             GraphicsDevice.Clear(Color.CornflowerBlue);
 			_sceneManager.CurrentScene.Draw(gameTime, GraphicsDevice);
             base.Draw(gameTime);
+        }
+
+        private void SetResolution(int width, int height)
+        {
+            _graphics.PreferredBackBufferWidth = width;
+            _graphics.PreferredBackBufferHeight = height;            
+            //_graphics.IsFullScreen = true;
+            _graphics.ApplyChanges();
         }
     }
 }

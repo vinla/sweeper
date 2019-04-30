@@ -12,7 +12,7 @@ namespace Sweeper
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.RegisterType<MainMenu>();
-			builder.RegisterType<Scene2>();
+			builder.RegisterType<MainScene>();
 		}
 	}
 }
