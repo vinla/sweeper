@@ -50,6 +50,9 @@
     <Compile Include="Scene.cs" />
     <Compile Include="SceneManager.cs" />
     <Compile Include="Scenes\MainScene.cs" />
+    <Compile Include="GameObjects\Map.cs" />
+    <Compile Include="GameObjects\MapTile.cs" />
+    <Compile Include="GameObjects\MapTileType.cs" />
     <Compile Include="Scenes\SceneModule.cs" />
     <Compile Include="Sweeper.cs" />
     <Compile Include="Program.cs" />

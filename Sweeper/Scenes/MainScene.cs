@@ -7,14 +7,15 @@ using System.Linq;
 
 namespace Sweeper
 {
-    public class MainScene : Scene
+	public class MainScene : Scene
 	{
 		private readonly ISceneManager _sceneManager;
         private readonly IInputManager _inputManager;
         private readonly ContentManager _contentManager;
         private Texture2D _playerSprite;
+		private SpriteFont _gameFont;
         private Point _playerPosition;
-        private MapTile[] _map;
+        private Map _map;
 
 		public MainScene(ISceneManager sceneManager, IInputManager inputManager, ContentManager contentManager)
 		{
@@ -22,17 +23,24 @@ namespace Sweeper
             _inputManager = inputManager;
             _contentManager = contentManager;
             _playerPosition = new Point(0, 0);
-            _map = new MapTile[100];
+			_map = new Map(20, 15);
 
-            for (int i = 0; i < 10; i++)
-                for (int j = 0; j < 10; j++)
-                    _map[i + (j * 10)] = new MapTile(i, j);
-            GetTileAt(5, 5).TileType = MapTileType.Blocked;
-        }
+			_map.GetTileAt(0, 0).TileType = MapTileType.Start;
+			var rng = new System.Random();
+			for(int i = 0; i < 30; i++)
+			{
+				int x = rng.Next(0, _map.Width);
+				int y = rng.Next(0, _map.Height);
+				_map.GetTileAt(x, y).TileType = MapTileType.Hazard;
+			}
+            //_map.GetTileAt(5, 5).TileType = MapTileType.Hazard;
+			//_map.GetTileAt(5, 6).TileType = MapTileType.Hazard;
+		}
 
         public override void Initialise()
         {
             _playerSprite = _contentManager.Load<Texture2D>("ball");
+			_gameFont = _contentManager.Load<SpriteFont>("MainMenu");
         }
 
         public override void Draw(GameTime gameTime, GraphicsDevice graphicsDevice)
@@ -44,12 +52,18 @@ namespace Sweeper
             using (var spriteBatch = new SpriteBatch(graphicsDevice))
             {
                 spriteBatch.Begin();
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < _map.Width; i++)
                 {
-                    for (int j = 0; j < 10; j++)
+                    for (int j = 0; j < _map.Height; j++)
                     {
-                        var color = GetTileColor(GetTileAt(i, j));
-                        spriteBatch.Draw(gridSprite, new Vector2(i * 48, j * 48), color);
+						var tile = _map.GetTileAt(i, j);
+						var color = GetTileColor(tile);
+						var gridPosition = new Vector2(i * 48, j * 48);
+						spriteBatch.Draw(gridSprite, gridPosition, color);
+						if (tile.Adjacents > 0)
+						{
+							spriteBatch.DrawString(_gameFont, tile.Adjacents.ToString(), gridPosition, Color.Black);
+						}
                     }
                 }
 
@@ -69,6 +83,12 @@ namespace Sweeper
                 {
                     case MapTileType.Blocked:
                         return Color.Gray;
+					case MapTileType.Hazard:
+						return Color.Red;
+					case MapTileType.Treasure:
+						return Color.Gold;
+					case MapTileType.Start:
+						return Color.LightSteelBlue;
                     default:
                         return Color.White;
                 }
@@ -96,31 +116,41 @@ namespace Sweeper
                 _playerPosition = new Point(_playerPosition.X + 1, _playerPosition.Y);
             }
             
-            if (_playerPosition.X < 0 || _playerPosition.X > 9 || _playerPosition.Y < 0 || _playerPosition.Y > 9)
+            if (_playerPosition.X < 0 || _playerPosition.X >= _map.Width || _playerPosition.Y < 0 || _playerPosition.Y >= _map.Height)
                 _playerPosition = originalPosition;
 
-            var targetTile = GetTileAt(_playerPosition);
+            var targetTile = _map.GetTileAt(_playerPosition);
             if (targetTile.TileType == MapTileType.Blocked)
                 _playerPosition = originalPosition;
 
             if (_playerPosition != originalPosition)
             {
-                var playerTile = GetTileAt(_playerPosition);
-                playerTile.Adjacents = 0;
-                foreach (var tile in GetAdjacentTiles(playerTile))
-                    tile.Adjacents = 0;
+                var playerTile = _map.GetTileAt(_playerPosition);
+				ResolveTile(playerTile);
             }
 		}
 
-        private MapTile GetTileAt(Point p)
-        {
-            return GetTileAt(p.X, p.Y);
-        }
+		public void ResolveTile(MapTile tile)
+		{
+			if (tile.Adjacents.HasValue)
+				return;
 
-        private MapTile GetTileAt(int x, int y)
-        {
-            return _map.SingleOrDefault(t => t.Location.X == x && t.Location.Y == y);
-        }
+			if(tile.TileType != MapTileType.Empty)
+			{
+				tile.Adjacents = 0;
+				return;
+			}
+
+			var adjacentTiles = GetAdjacentTiles(tile);
+
+			var hazardTiles = new[] { MapTileType.Hazard, MapTileType.Treasure };
+
+			tile.Adjacents = adjacentTiles.Count(t => hazardTiles.Contains(t.TileType));
+
+			if (tile.Adjacents == 0)
+				foreach (var next in adjacentTiles)
+					ResolveTile(next);
+		}        
         
         public MapTile[] GetAdjacentTiles(MapTile tile)
         {
@@ -131,7 +161,7 @@ namespace Sweeper
                 {
                     if (i == 0 && j == 0)
                         continue;
-                    var adjTile = GetTileAt(tile.Location.X + i, tile.Location.Y + j);
+                    var adjTile = _map.GetTileAt(tile.Location.X + i, tile.Location.Y + j);
                     if (adjTile != null)
                         tiles.Add(adjTile);
                 }
@@ -139,27 +169,4 @@ namespace Sweeper
             return tiles.ToArray();
         }
 	}
-
-    public class MapTile
-    {
-        public MapTile(int x, int y)
-        {
-            Location = new Point(x, y);
-        }
-        public int? Adjacents { get; set; }
-
-        public MapTileType TileType { get; set; }
-
-        public Point Location { get; }
-    }
-
-    public enum MapTileType
-    {        
-        Empty,
-        Start,
-        Blocked,
-        Hazard,
-        Treasure,
-        Exit
-    }
 }
