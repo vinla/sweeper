@@ -58,7 +58,7 @@
     <Compile Include="Scenes\PlayerController.cs" />
     <Compile Include="Scenes\PushController.cs" />
     <Compile Include="Scenes\SceneModule.cs" />
-    <Compile Include="Scenes\Spirit.cs" />
+    <Compile Include="GameObjects\Spirit.cs" />
     <Compile Include="Scenes\TeleportController.cs" />
     <Compile Include="Sweeper.cs" />
     <Compile Include="Program.cs" />

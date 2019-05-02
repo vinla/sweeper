@@ -35,5 +35,12 @@ namespace Sweeper
 		{
 			return new Point(p.X * multiplier, p.Y * multiplier);
 		}
+
+		public static int DistanceTo(this Point p, Point target)
+		{
+			var diffX = System.Math.Abs(p.X - target.X);
+			var diffY = System.Math.Abs(p.Y - target.Y);
+			return diffX + diffY;
+		}
 	}
 }

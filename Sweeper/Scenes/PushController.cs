@@ -82,11 +82,13 @@ namespace Sweeper.Scenes
 				{					
 					// TODO: Implement proper push that checks for collision etcs
 					spirit.Location = spirit.Location.Offset(_direction.Times(_power));
+					spirit.Stunned = true;
 					break; 
 				}
 			}
 
 			Scene.Controllers.Pop();
+			Scene.PlayerMoved = true;
 		}
 
 		public override void DrawOverlay(SpriteBatch spriteBatch)

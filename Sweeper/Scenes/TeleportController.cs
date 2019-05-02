@@ -45,6 +45,7 @@ namespace Sweeper.Scenes
 			{
 				Scene.SetPlayerPosition(_target.Location);
 				Scene.Controllers.Pop();
+				Scene.PlayerMoved = true;
 			}
 		}
 
@@ -62,10 +63,7 @@ namespace Sweeper.Scenes
 				return;
 
 			_target = intendedTarget;
-
-			var diffX = System.Math.Abs(Scene.PlayerPosition.X - _target.Location.X);
-			var diffY = System.Math.Abs(Scene.PlayerPosition.Y - _target.Location.Y);
-			_cost = diffX + diffY;
+			_cost = _target.Location.DistanceTo(Scene.PlayerPosition);			
 		}
 
 		private bool TargetIsClear()

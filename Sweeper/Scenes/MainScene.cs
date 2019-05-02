@@ -15,7 +15,7 @@ namespace Sweeper
 		
         private Texture2D _playerSprite;
 		private SpriteFont _gameFont;
-		private List<Spirit> _spirits;
+		private List<Spirit> _spirits;		
 
 		public MainScene(ISceneManager sceneManager, IInputManager inputManager, ContentManager contentManager)
 		{
@@ -28,12 +28,12 @@ namespace Sweeper
 			playerController.Initialise();
 			_controllerStack.Push(playerController);
 			
-            PlayerPosition = new Point(5, 10);
+            PlayerPosition = new Point(0, 0);
 			Map = new Map(20, 15);
 			
 			Map.GetTileAt(5, 5).TileType = MapTileType.Hazard;
 
-			var spirit = new Spirit(5, 6);
+			var spirit = new Spirit(5, 6, this);
 			_spirits = new List<Spirit>();
 			_spirits.Add(spirit);
 		}
@@ -41,6 +41,8 @@ namespace Sweeper
 		public Map Map { get; }
 
 		public Point PlayerPosition { get; private set; }
+
+		public bool PlayerMoved { get; set;  }
 
 		public Stack<BaseController> Controllers => _controllerStack;
 
@@ -120,7 +122,10 @@ namespace Sweeper
 		{
 			var tile = Map.GetTileAt(PlayerPosition);
 			ResolveTile(tile);
+			PlayerMoved = false;
 			_controllerStack.Peek().ProcessInput(gameTime, _inputManager);
+			foreach (var spirit in _spirits)
+				spirit.Update(gameTime);
 			CheckEvents();
 		}
 

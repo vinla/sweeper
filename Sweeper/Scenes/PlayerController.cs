@@ -62,6 +62,7 @@ namespace Sweeper
 
 			Scene.SetPlayerPosition(target);
 			Scene.ResolveTile(targetTile);
+			Scene.PlayerMoved = true;
 		}
 	}
 }

@@ -34,6 +34,11 @@ namespace Sweeper
 
 		public MapTile[] GetAdjacentTiles(MapTile tile)
 		{
+			return GetAdjacentTiles(tile.Location);
+		}
+
+		public MapTile[] GetAdjacentTiles(Point p)
+		{
 			var tiles = new List<MapTile>();
 
 			for (int i = -1; i < 2; i++)
@@ -41,7 +46,7 @@ namespace Sweeper
 				{
 					if (i == 0 && j == 0)
 						continue;
-					var adjTile = GetTileAt(tile.Location.X + i, tile.Location.Y + j);
+					var adjTile = GetTileAt(p.X + i, p.Y + j);
 					if (adjTile != null)
 						tiles.Add(adjTile);
 				}
