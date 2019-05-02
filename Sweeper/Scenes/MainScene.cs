@@ -46,6 +46,8 @@ namespace Sweeper
 
 		public List<Spirit> Spirits => _spirits;
 
+		public SpriteFont Font => _gameFont;
+
 		public void SetPlayerPosition(Point p)
 		{
 			PlayerPosition = p;
@@ -119,6 +121,7 @@ namespace Sweeper
 			var tile = Map.GetTileAt(PlayerPosition);
 			ResolveTile(tile);
 			_controllerStack.Peek().ProcessInput(gameTime, _inputManager);
+			CheckEvents();
 		}
 
 		public void ResolveTile(MapTile tile)
@@ -132,7 +135,7 @@ namespace Sweeper
 				return;
 			}
 
-			var adjacentTiles = GetAdjacentTiles(tile);
+			var adjacentTiles = Map.GetAdjacentTiles(tile);
 
 			var hazardTiles = new[] { MapTileType.Hazard, MapTileType.Treasure };
 
@@ -141,23 +144,29 @@ namespace Sweeper
 			if (tile.Adjacents == 0)
 				foreach (var next in adjacentTiles)
 					ResolveTile(next);
-		}        
-        
-        public MapTile[] GetAdjacentTiles(MapTile tile)
-        {
-            var tiles = new List<MapTile>();
+		}
 
-            for(int i = -1; i < 2; i++)
-                for(int j = -1; j < 2; j++)
-                {
-                    if (i == 0 && j == 0)
-                        continue;
-                    var adjTile = Map.GetTileAt(tile.Location.X + i, tile.Location.Y + j);
-                    if (adjTile != null)
-                        tiles.Add(adjTile);
-                }
+		public void CheckEvents()
+		{
+			// TODO: Check for player death
+			// TODO: Check for spirits
 
-            return tiles.ToArray();
-        }
+			for(int i =0; i < _spirits.Count; )
+			{
+				var tile = Map.GetTileAt(_spirits[i].Location);
+				if (tile.TileType == MapTileType.Hazard)
+				{
+					_spirits.RemoveAt(i);
+					tile.TileType = MapTileType.Empty;
+					foreach(var adjTile in Map.GetAdjacentTiles(tile))
+					{
+						adjTile.Adjacents = null;
+					}
+					ResolveTile(tile);
+				}
+				else
+					i++;
+			}
+		}
 	}
 }

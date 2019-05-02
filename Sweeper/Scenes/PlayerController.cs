@@ -32,12 +32,20 @@ namespace Sweeper
 			MovePlayer(1, 0);
 		}
 
-		[InputAction(GameInput.Cast)]
+		[InputAction(GameInput.CastPush)]
 		public void CastPush()
 		{
 			var pushController = new Scenes.PushController(Scene);
 			pushController.Initialise();
 			Scene.Controllers.Push(pushController);
+		}
+
+		[InputAction(GameInput.CastTeleport)]
+		public void CastTeleport()
+		{
+			var tpController = new Scenes.TeleportController(Scene);
+			tpController.Initialise();
+			Scene.Controllers.Push(tpController);
 		}
 
 		private void MovePlayer(int x, int y)

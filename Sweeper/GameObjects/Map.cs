@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace Sweeper
@@ -29,6 +30,23 @@ namespace Sweeper
 		public MapTile GetTileAt(int x, int y)
 		{
 			return _tiles.SingleOrDefault(t => t.Location.X == x && t.Location.Y == y);
+		}
+
+		public MapTile[] GetAdjacentTiles(MapTile tile)
+		{
+			var tiles = new List<MapTile>();
+
+			for (int i = -1; i < 2; i++)
+				for (int j = -1; j < 2; j++)
+				{
+					if (i == 0 && j == 0)
+						continue;
+					var adjTile = GetTileAt(tile.Location.X + i, tile.Location.Y + j);
+					if (adjTile != null)
+						tiles.Add(adjTile);
+				}
+
+			return tiles.ToArray();
 		}
 	}
 }

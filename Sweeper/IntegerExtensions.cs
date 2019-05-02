@@ -16,9 +16,14 @@ namespace Sweeper
 			return returnValue > max ? min : returnValue;
 		}
 
+		public static Point Offset(this Point p, int x, int y)
+		{
+			return new Point(p.X + x, p.Y + y);
+		}
+
 		public static Point Offset(this Point p, Point offset)
 		{
-			return new Point(p.X + offset.X, p.Y + offset.Y);
+			return p.Offset(offset.X, offset.Y);
 		}
 
 		public static bool InBouds(this Point p, int minX, int minY, int maxX, int maxY)

@@ -59,6 +59,7 @@
     <Compile Include="Scenes\PushController.cs" />
     <Compile Include="Scenes\SceneModule.cs" />
     <Compile Include="Scenes\Spirit.cs" />
+    <Compile Include="Scenes\TeleportController.cs" />
     <Compile Include="Sweeper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

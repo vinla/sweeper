@@ -28,8 +28,8 @@ namespace Sweeper
             _keyBindings.Add(Tuple.Create(Keys.Right, GameInput.MoveRight));
             _keyBindings.Add(Tuple.Create(Keys.Up, GameInput.MoveUp));
             _keyBindings.Add(Tuple.Create(Keys.Down, GameInput.MoveDown));
-			_keyBindings.Add(Tuple.Create(Keys.Space, GameInput.Cast));
-			_keyBindings.Add(Tuple.Create(Keys.C, GameInput.Cast));
+			_keyBindings.Add(Tuple.Create(Keys.D1, GameInput.CastPush));
+			_keyBindings.Add(Tuple.Create(Keys.D2, GameInput.CastTeleport));
 			_keyBindings.Add(Tuple.Create(Keys.Escape, GameInput.CancelCast));
 			_keyBindings.Add(Tuple.Create(Keys.Enter, GameInput.ConfirmCast));
 			_keyBindings.Add(Tuple.Create(Keys.OemPlus, GameInput.PowerUp));
@@ -83,7 +83,8 @@ namespace Sweeper
         MoveDown,
         MoveLeft,
         MoveRight,
-		Cast,
+		CastPush,
+		CastTeleport,
 		CancelCast,
 		ConfirmCast,
 		PowerUp,
