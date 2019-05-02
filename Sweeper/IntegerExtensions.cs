@@ -1,4 +1,6 @@
-﻿namespace Sweeper
+﻿using Microsoft.Xna.Framework;
+
+namespace Sweeper
 {
     public static class IntegerExtensions
 	{
@@ -12,6 +14,21 @@
 		{
 			int returnValue = i + 1;
 			return returnValue > max ? min : returnValue;
+		}
+
+		public static Point Offset(this Point p, Point offset)
+		{
+			return new Point(p.X + offset.X, p.Y + offset.Y);
+		}
+
+		public static bool InBouds(this Point p, int minX, int minY, int maxX, int maxY)
+		{
+			return p.X >= minX && p.X < maxX && p.Y >= minY && p.Y < maxY;
+		}
+
+		public static Point Times(this Point p, int multiplier)
+		{
+			return new Point(p.X * multiplier, p.Y * multiplier);
 		}
 	}
 }

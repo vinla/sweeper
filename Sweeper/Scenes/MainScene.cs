@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,29 +11,44 @@ namespace Sweeper
 		private readonly ISceneManager _sceneManager;
         private readonly IInputManager _inputManager;
         private readonly ContentManager _contentManager;
+		private readonly Stack<BaseController> _controllerStack;
+		
         private Texture2D _playerSprite;
 		private SpriteFont _gameFont;
-        private Point _playerPosition;
-        private Map _map;
+		private List<Spirit> _spirits;
 
 		public MainScene(ISceneManager sceneManager, IInputManager inputManager, ContentManager contentManager)
 		{
 			_sceneManager = sceneManager;
             _inputManager = inputManager;
             _contentManager = contentManager;
-            _playerPosition = new Point(0, 0);
-			_map = new Map(20, 15);
+			_controllerStack = new Stack<BaseController>();
 
-			_map.GetTileAt(0, 0).TileType = MapTileType.Start;
-			var rng = new System.Random();
-			for(int i = 0; i < 30; i++)
-			{
-				int x = rng.Next(0, _map.Width);
-				int y = rng.Next(0, _map.Height);
-				_map.GetTileAt(x, y).TileType = MapTileType.Hazard;
-			}
-            //_map.GetTileAt(5, 5).TileType = MapTileType.Hazard;
-			//_map.GetTileAt(5, 6).TileType = MapTileType.Hazard;
+			var playerController = new PlayerController(this);
+			playerController.Initialise();
+			_controllerStack.Push(playerController);
+			
+            PlayerPosition = new Point(5, 10);
+			Map = new Map(20, 15);
+			
+			Map.GetTileAt(5, 5).TileType = MapTileType.Hazard;
+
+			var spirit = new Spirit(5, 6);
+			_spirits = new List<Spirit>();
+			_spirits.Add(spirit);
+		}
+
+		public Map Map { get; }
+
+		public Point PlayerPosition { get; private set; }
+
+		public Stack<BaseController> Controllers => _controllerStack;
+
+		public List<Spirit> Spirits => _spirits;
+
+		public void SetPlayerPosition(Point p)
+		{
+			PlayerPosition = p;
 		}
 
         public override void Initialise()
@@ -47,27 +61,32 @@ namespace Sweeper
 		{
 			graphicsDevice.Clear(Color.Olive);
 
-            var gridSprite = graphicsDevice.CreateRectangeTexture(48, 48, 2);
+            var gridSprite = graphicsDevice.CreateRectangeTexture(48, 48, 2, Color.Black, Color.White);
 
             using (var spriteBatch = new SpriteBatch(graphicsDevice))
             {
                 spriteBatch.Begin();
-                for (int i = 0; i < _map.Width; i++)
+                for (int i = 0; i < Map.Width; i++)
                 {
-                    for (int j = 0; j < _map.Height; j++)
+                    for (int j = 0; j < Map.Height; j++)
                     {
-						var tile = _map.GetTileAt(i, j);
+						var tile = Map.GetTileAt(i, j);
 						var color = GetTileColor(tile);
 						var gridPosition = new Vector2(i * 48, j * 48);
 						spriteBatch.Draw(gridSprite, gridPosition, color);
 						if (tile.Adjacents > 0)
 						{
-							spriteBatch.DrawString(_gameFont, tile.Adjacents.ToString(), gridPosition, Color.Black);
+							var offset = new Vector2(8, 8);
+							spriteBatch.DrawString(_gameFont, tile.Adjacents.ToString(), gridPosition + offset, Color.Black);
 						}
                     }
                 }
 
-                spriteBatch.Draw(_playerSprite, new Rectangle(_playerPosition.X * 48, _playerPosition.Y * 48, 48, 48), Color.White);
+				foreach (var spirit in _spirits)
+					spriteBatch.Draw(_playerSprite, new Rectangle(spirit.Location.X * 48, spirit.Location.Y * 48, 48, 48), Color.Green);
+
+				spriteBatch.Draw(_playerSprite, new Rectangle(PlayerPosition.X * 48, PlayerPosition.Y * 48, 48, 48), Color.White);
+				_controllerStack.Peek().DrawOverlay(spriteBatch);
 
                 spriteBatch.End();
             }
@@ -90,44 +109,16 @@ namespace Sweeper
 					case MapTileType.Start:
 						return Color.LightSteelBlue;
                     default:
-                        return Color.White;
+						return mapTile.Adjacents > 0 ? Color.Yellow : Color.White;
                 }
             }
         }
 
 		public override void Update(GameTime gameTime)
 		{
-            var originalPosition = _playerPosition;
-
-			if (_inputManager.WasInput(GameInput.MoveUp))
-            {
-                _playerPosition = new Point(_playerPosition.X, _playerPosition.Y - 1);
-            }
-            else if(_inputManager.WasInput(GameInput.MoveDown))
-            {
-                _playerPosition = new Point(_playerPosition.X, _playerPosition.Y + 1);
-            }
-            else if(_inputManager.WasInput(GameInput.MoveLeft))
-            {
-                _playerPosition = new Point(_playerPosition.X - 1, _playerPosition.Y);
-            }
-            else if(_inputManager.WasInput(GameInput.MoveRight))
-            {
-                _playerPosition = new Point(_playerPosition.X + 1, _playerPosition.Y);
-            }
-            
-            if (_playerPosition.X < 0 || _playerPosition.X >= _map.Width || _playerPosition.Y < 0 || _playerPosition.Y >= _map.Height)
-                _playerPosition = originalPosition;
-
-            var targetTile = _map.GetTileAt(_playerPosition);
-            if (targetTile.TileType == MapTileType.Blocked)
-                _playerPosition = originalPosition;
-
-            if (_playerPosition != originalPosition)
-            {
-                var playerTile = _map.GetTileAt(_playerPosition);
-				ResolveTile(playerTile);
-            }
+			var tile = Map.GetTileAt(PlayerPosition);
+			ResolveTile(tile);
+			_controllerStack.Peek().ProcessInput(gameTime, _inputManager);
 		}
 
 		public void ResolveTile(MapTile tile)
@@ -161,7 +152,7 @@ namespace Sweeper
                 {
                     if (i == 0 && j == 0)
                         continue;
-                    var adjTile = _map.GetTileAt(tile.Location.X + i, tile.Location.Y + j);
+                    var adjTile = Map.GetTileAt(tile.Location.X + i, tile.Location.Y + j);
                     if (adjTile != null)
                         tiles.Add(adjTile);
                 }

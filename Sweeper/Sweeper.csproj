@@ -46,6 +46,8 @@
     <Compile Include="ISceneManager.cs" />
     <Compile Include="IntegerExtensions.cs" />
     <Compile Include="GrpahicsExtensions.cs" />
+    <Compile Include="Scenes\BaseController.cs" />
+    <Compile Include="Scenes\InputActionAttribute.cs" />
     <Compile Include="Scenes\MainMenu.cs" />
     <Compile Include="Scene.cs" />
     <Compile Include="SceneManager.cs" />
@@ -53,7 +55,10 @@
     <Compile Include="GameObjects\Map.cs" />
     <Compile Include="GameObjects\MapTile.cs" />
     <Compile Include="GameObjects\MapTileType.cs" />
+    <Compile Include="Scenes\PlayerController.cs" />
+    <Compile Include="Scenes\PushController.cs" />
     <Compile Include="Scenes\SceneModule.cs" />
+    <Compile Include="Scenes\Spirit.cs" />
     <Compile Include="Sweeper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

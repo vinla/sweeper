@@ -28,7 +28,15 @@ namespace Sweeper
             _keyBindings.Add(Tuple.Create(Keys.Right, GameInput.MoveRight));
             _keyBindings.Add(Tuple.Create(Keys.Up, GameInput.MoveUp));
             _keyBindings.Add(Tuple.Create(Keys.Down, GameInput.MoveDown));
-        }
+			_keyBindings.Add(Tuple.Create(Keys.Space, GameInput.Cast));
+			_keyBindings.Add(Tuple.Create(Keys.C, GameInput.Cast));
+			_keyBindings.Add(Tuple.Create(Keys.Escape, GameInput.CancelCast));
+			_keyBindings.Add(Tuple.Create(Keys.Enter, GameInput.ConfirmCast));
+			_keyBindings.Add(Tuple.Create(Keys.OemPlus, GameInput.PowerUp));
+			_keyBindings.Add(Tuple.Create(Keys.OemMinus, GameInput.PowerDown));
+			_keyBindings.Add(Tuple.Create(Keys.Add, GameInput.PowerUp));
+			_keyBindings.Add(Tuple.Create(Keys.Subtract, GameInput.PowerDown));
+		}
 
         public void EarlyUpdate(GameTime time)
         {
@@ -48,15 +56,25 @@ namespace Sweeper
                 keysJustPressed = keysJustPressed.Except(_previousState.GetPressedKeys()).ToArray();
             return keysJustPressed.Intersect(keys).Any();
         }
+
+		public GameInput Test(params GameInput[] inputs)
+		{
+			foreach (var input in inputs)
+				if (WasInput(input))
+					return input;
+			return GameInput.None;
+		}
     }
 
     public interface IInputManager
     {
         bool WasInput(GameInput input);
+		GameInput Test(params GameInput[] inputs);
     }
 
     public enum GameInput
     {
+		None,
         MenuBack,
         MenuSelect,
         MenuUp,    
@@ -64,6 +82,11 @@ namespace Sweeper
         MoveUp,
         MoveDown,
         MoveLeft,
-        MoveRight
+        MoveRight,
+		Cast,
+		CancelCast,
+		ConfirmCast,
+		PowerUp,
+		PowerDown
     }
 }

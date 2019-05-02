@@ -13,5 +13,7 @@ namespace Sweeper
         public MapTileType TileType { get; set; }
 
         public Point Location { get; }
+
+		public bool ShowValue { get; set; }
     }
 }
