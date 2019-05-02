@@ -55,6 +55,12 @@ namespace Sweeper
 			PlayerPosition = p;
 		}
 
+		public void Reset()
+		{
+			_sceneManager.EndScene();
+			_sceneManager.StartScene<MainScene>();
+		}
+
         public override void Initialise()
         {
             _playerSprite = _contentManager.Load<Texture2D>("ball");

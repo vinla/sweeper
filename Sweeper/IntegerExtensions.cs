@@ -42,5 +42,10 @@ namespace Sweeper
 			var diffY = System.Math.Abs(p.Y - target.Y);
 			return diffX + diffY;
 		}
+
+		public static Point VectorTo(this Point p, Point target)
+		{
+			return new Point(target.X - p.X, target.Y - p.Y);
+		}
 	}
 }
