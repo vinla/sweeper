@@ -46,6 +46,7 @@
     <Compile Include="ISceneManager.cs" />
     <Compile Include="IntegerExtensions.cs" />
     <Compile Include="GrpahicsExtensions.cs" />
+    <Compile Include="MapGenerator.cs" />
     <Compile Include="Scenes\BaseController.cs" />
     <Compile Include="Scenes\InputActionAttribute.cs" />
     <Compile Include="Scenes\MainMenu.cs" />

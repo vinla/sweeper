@@ -7,22 +7,21 @@ namespace Sweeper
 {
     public class MainMenu : MenuScene
 	{
-		private readonly ISceneManager _sceneManager;
-        private readonly IInputManager _inputManager;
-		private readonly ContentManager _contentManager;
-		private readonly List<string> _menuOptions;
-		private int _selectedOption;
-		private SpriteFont _menuFont;
-
 		public MainMenu(ISceneManager sceneManager, IInputManager inputManager, ContentManager contentManager)
 			: base(sceneManager, inputManager, contentManager)
 		{		
 		}
 
-		[MenuOption("New Game")]
+		[MenuOption("New Game", 0)]
 		public void NewGame()
 		{
-
+            SceneManager.StartScene<MainScene>();
 		}
+
+        [MenuOption("Exit", 1)]
+        public void Exit()
+        {
+            SceneManager.Exit();
+        }
 	}
 }

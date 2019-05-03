@@ -29,9 +29,8 @@ namespace Sweeper
 			_controllerStack.Push(playerController);
 			
             PlayerPosition = new Point(0, 0);
-			Map = new Map(20, 15);
+            Map = MapGenerator.Generate(20, 15, 5);
 			
-			Map.GetTileAt(5, 5).TileType = MapTileType.Hazard;
 
 			var spirit = new Spirit(5, 6, this);
 			_spirits = new List<Spirit>();
@@ -60,6 +59,11 @@ namespace Sweeper
 			_sceneManager.EndScene();
 			_sceneManager.StartScene<MainScene>();
 		}
+
+        public void Pause()
+        {
+            _sceneManager.StartScene<Scenes.PauseMenuScene>();
+        }
 
         public override void Initialise()
         {

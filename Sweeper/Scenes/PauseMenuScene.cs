@@ -17,6 +17,31 @@ namespace Sweeper.Scenes
 		{			
 		}
 
-		
+        [MenuOption("Resume", 0)]
+        public void Resume()
+        {
+            SceneManager.EndScene();
+        }
+
+        [MenuOption("Restart", 1)]
+        public void Restart()
+        {
+            SceneManager.EndScene();
+            SceneManager.EndScene();
+            SceneManager.StartScene<MainScene>();
+        }
+
+        [MenuOption("Main Menu", 2)]
+        public void Home()
+        {
+            SceneManager.EndScene();
+            SceneManager.EndScene();
+        }
+
+        [MenuOption("Quit Game", 3)]
+        public void Quit()
+        {
+            SceneManager.Exit();
+        }		
 	}
 }

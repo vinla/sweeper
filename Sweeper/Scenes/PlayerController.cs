@@ -48,6 +48,12 @@ namespace Sweeper
 			Scene.Controllers.Push(tpController);
 		}
 
+        [InputAction(GameInput.MenuBack)]
+        public void PauseGame()
+        {
+            Scene.Pause();
+        }
+
 		private void MovePlayer(int x, int y)
 		{
 			var target = new Point(Scene.PlayerPosition.X + x, Scene.PlayerPosition.Y + y);

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace Sweeper
 {
@@ -28,25 +29,25 @@ namespace Sweeper
 			if (ToPlayer.X == 0 || ToPlayer.Y == 0)
 			{
 				_scene.Reset();
-			}						
-
-			var adjacentTiles = _scene.Map.GetAdjacentTiles(Location);
-			var bestDistance = 10000;
-			
-			foreach(var tile in adjacentTiles)
-			{
-				if(tile.Adjacents.HasValue && tile.TileType == MapTileType.Empty)
-				{
-					var distance = tile.Location.DistanceTo(_scene.PlayerPosition);
-					if (distance < bestDistance)
-					{
-						bestDistance = distance;
-						target = tile;
-					}
-				}
 			}
+            
+            if(Math.Abs(ToPlayer.X) <= Math.Abs(ToPlayer.Y))
+            {
+                if (ToPlayer.X > 0)
+                    target = _scene.Map.GetTileAt(Location.Offset(1, 0));
+                else
+                    target = _scene.Map.GetTileAt(Location.Offset(-1, 0));
+            }
+            else
+            {
+                if (ToPlayer.Y > 0)
+                    target = _scene.Map.GetTileAt(Location.Offset(0, 1));
+                else
+                    target = _scene.Map.GetTileAt(Location.Offset(0, -1));
+            }
 
-			Location = target.Location;
+            if(target != null)
+			    Location = target.Location;
 		}
 	}	
 }
