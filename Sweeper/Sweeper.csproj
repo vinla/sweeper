@@ -55,6 +55,8 @@
     <Compile Include="GameObjects\Map.cs" />
     <Compile Include="GameObjects\MapTile.cs" />
     <Compile Include="GameObjects\MapTileType.cs" />
+    <Compile Include="Scenes\MenuScene.cs" />
+    <Compile Include="Scenes\PauseMenuScene.cs" />
     <Compile Include="Scenes\PlayerController.cs" />
     <Compile Include="Scenes\PushController.cs" />
     <Compile Include="Scenes\SceneModule.cs" />

@@ -75,7 +75,8 @@ namespace Sweeper
 
             using (var spriteBatch = new SpriteBatch(graphicsDevice))
             {
-                spriteBatch.Begin();
+				var offsetTransform = Matrix.CreateTranslation(320, 0, 0);
+                spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, offsetTransform);
                 for (int i = 0; i < Map.Width; i++)
                 {
                     for (int j = 0; j < Map.Height; j++)
