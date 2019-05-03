@@ -32,27 +32,27 @@ namespace Sweeper
 			MovePlayer(1, 0);
 		}
 
-		[InputAction(GameInput.CastPush)]
-		public void CastPush()
+		[InputAction(GameInput.IdentifySkill)]
+		public void UseIndentify()
 		{
-			var pushController = new Scenes.PushController(Scene);
-			pushController.Initialise();
-			Scene.Controllers.Push(pushController);
+			var idController = new Scenes.IdentifyController(Scene);
+			idController.Initialise();
+			Scene.Controllers.Push(idController);
 		}
 
-		[InputAction(GameInput.CastTeleport)]
-		public void CastTeleport()
-		{
-			var tpController = new Scenes.TeleportController(Scene);
-			tpController.Initialise();
-			Scene.Controllers.Push(tpController);
-		}
+        [InputAction(GameInput.DisarmSkill)]
+        public void UseDisarm()
+        {
+            var disarmController = new Scenes.DisarmController(Scene);
+            disarmController.Initialise();
+            Scene.Controllers.Push(disarmController);
+        }
 
         [InputAction(GameInput.MenuBack)]
         public void PauseGame()
         {
             Scene.Pause();
-        }
+        }        
 
 		private void MovePlayer(int x, int y)
 		{

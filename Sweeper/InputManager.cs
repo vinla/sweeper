@@ -28,14 +28,9 @@ namespace Sweeper
             _keyBindings.Add(Tuple.Create(Keys.Right, GameInput.MoveRight));
             _keyBindings.Add(Tuple.Create(Keys.Up, GameInput.MoveUp));
             _keyBindings.Add(Tuple.Create(Keys.Down, GameInput.MoveDown));
-			_keyBindings.Add(Tuple.Create(Keys.D1, GameInput.CastPush));
-			_keyBindings.Add(Tuple.Create(Keys.D2, GameInput.CastTeleport));
-			_keyBindings.Add(Tuple.Create(Keys.Escape, GameInput.CancelCast));
-			_keyBindings.Add(Tuple.Create(Keys.Enter, GameInput.ConfirmCast));
-			_keyBindings.Add(Tuple.Create(Keys.OemPlus, GameInput.PowerUp));
-			_keyBindings.Add(Tuple.Create(Keys.OemMinus, GameInput.PowerDown));
-			_keyBindings.Add(Tuple.Create(Keys.Add, GameInput.PowerUp));
-			_keyBindings.Add(Tuple.Create(Keys.Subtract, GameInput.PowerDown));
+			_keyBindings.Add(Tuple.Create(Keys.D1, GameInput.IdentifySkill));
+            _keyBindings.Add(Tuple.Create(Keys.D2, GameInput.DisarmSkill));
+            _keyBindings.Add(Tuple.Create(Keys.Escape, GameInput.CancelSkill));
 		}
 
         public void EarlyUpdate(GameTime time)
@@ -83,11 +78,8 @@ namespace Sweeper
         MoveDown,
         MoveLeft,
         MoveRight,
-		CastPush,
-		CastTeleport,
-		CancelCast,
-		ConfirmCast,
-		PowerUp,
-		PowerDown
+		IdentifySkill,
+        DisarmSkill,
+		CancelSkill
     }
 }

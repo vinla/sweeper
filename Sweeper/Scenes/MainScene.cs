@@ -14,8 +14,7 @@ namespace Sweeper
 		private readonly Stack<BaseController> _controllerStack;
 		
         private Texture2D _playerSprite;
-		private SpriteFont _gameFont;
-		private List<Spirit> _spirits;		
+		private SpriteFont _gameFont;		
 
 		public MainScene(ISceneManager sceneManager, IInputManager inputManager, ContentManager contentManager)
 		{
@@ -29,12 +28,7 @@ namespace Sweeper
 			_controllerStack.Push(playerController);
 			
             PlayerPosition = new Point(0, 0);
-            Map = MapGenerator.Generate(20, 15, 5);
-			
-
-			var spirit = new Spirit(5, 6, this);
-			_spirits = new List<Spirit>();
-			_spirits.Add(spirit);
+            Map = MapGenerator.Generate(20, 15, 25);		
 		}
 
 		public Map Map { get; }
@@ -44,8 +38,6 @@ namespace Sweeper
 		public bool PlayerMoved { get; set;  }
 
 		public Stack<BaseController> Controllers => _controllerStack;
-
-		public List<Spirit> Spirits => _spirits;
 
 		public SpriteFont Font => _gameFont;
 
@@ -96,10 +88,7 @@ namespace Sweeper
 						}
                     }
                 }
-
-				foreach (var spirit in _spirits)
-					spriteBatch.Draw(_playerSprite, new Rectangle(spirit.Location.X * 48, spirit.Location.Y * 48, 48, 48), Color.Green);
-
+				
 				spriteBatch.Draw(_playerSprite, new Rectangle(PlayerPosition.X * 48, PlayerPosition.Y * 48, 48, 48), Color.White);
 				_controllerStack.Peek().DrawOverlay(spriteBatch);
 
@@ -135,9 +124,6 @@ namespace Sweeper
 			ResolveTile(tile);
 			PlayerMoved = false;
 			_controllerStack.Peek().ProcessInput(gameTime, _inputManager);
-			foreach (var spirit in _spirits)
-				spirit.Update(gameTime);
-			CheckEvents();
 		}
 
 		public void ResolveTile(MapTile tile)
@@ -160,29 +146,6 @@ namespace Sweeper
 			if (tile.Adjacents == 0)
 				foreach (var next in adjacentTiles)
 					ResolveTile(next);
-		}
-
-		public void CheckEvents()
-		{
-			// TODO: Check for player death
-			// TODO: Check for spirits
-
-			for(int i =0; i < _spirits.Count; )
-			{
-				var tile = Map.GetTileAt(_spirits[i].Location);
-				if (tile.TileType == MapTileType.Hazard)
-				{
-					_spirits.RemoveAt(i);
-					tile.TileType = MapTileType.Empty;
-					foreach(var adjTile in Map.GetAdjacentTiles(tile))
-					{
-						adjTile.Adjacents = null;
-					}
-					ResolveTile(tile);
-				}
-				else
-					i++;
-			}
-		}
+		}		
 	}
 }
