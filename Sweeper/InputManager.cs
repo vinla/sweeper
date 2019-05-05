@@ -28,6 +28,11 @@ namespace Sweeper
             _keyBindings.Add(Tuple.Create(Keys.Right, GameInput.MoveRight));
             _keyBindings.Add(Tuple.Create(Keys.Up, GameInput.MoveUp));
             _keyBindings.Add(Tuple.Create(Keys.Down, GameInput.MoveDown));
+			_keyBindings.Add(Tuple.Create(Keys.D1, GameInput.IdentifySkill));
+            _keyBindings.Add(Tuple.Create(Keys.D2, GameInput.TeleportSkill));
+            _keyBindings.Add(Tuple.Create(Keys.Escape, GameInput.CancelSkill));
+            _keyBindings.Add(Tuple.Create(Keys.Enter, GameInput.ConfirmTarget));
+            _keyBindings.Add(Tuple.Create(Keys.Space, GameInput.ConfirmTarget));
         }
 
         public void EarlyUpdate(GameTime time)
@@ -48,15 +53,25 @@ namespace Sweeper
                 keysJustPressed = keysJustPressed.Except(_previousState.GetPressedKeys()).ToArray();
             return keysJustPressed.Intersect(keys).Any();
         }
+
+		public GameInput Test(params GameInput[] inputs)
+		{
+			foreach (var input in inputs)
+				if (WasInput(input))
+					return input;
+			return GameInput.None;
+		}
     }
 
     public interface IInputManager
     {
         bool WasInput(GameInput input);
+		GameInput Test(params GameInput[] inputs);
     }
 
     public enum GameInput
     {
+		None,
         MenuBack,
         MenuSelect,
         MenuUp,    
@@ -64,6 +79,10 @@ namespace Sweeper
         MoveUp,
         MoveDown,
         MoveLeft,
-        MoveRight
+        MoveRight,
+		IdentifySkill,
+        TeleportSkill,
+		CancelSkill,
+        ConfirmTarget
     }
 }

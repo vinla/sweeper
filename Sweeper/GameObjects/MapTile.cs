@@ -13,5 +13,7 @@ namespace Sweeper
         public MapTileType TileType { get; set; }
 
         public Point Location { get; }
+
+        public bool IsVisible => Adjacents.HasValue || TileType == MapTileType.Blocked;
     }
 }

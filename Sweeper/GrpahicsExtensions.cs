@@ -5,7 +5,7 @@ namespace Sweeper
 {
     public static class GrpahicsExtensions
     {
-        public static Texture2D CreateRectangeTexture(this GraphicsDevice graphics, int width, int height, int borderWidth)
+        public static Texture2D CreateRectangeTexture(this GraphicsDevice graphics, int width, int height, int borderWidth, Color borderColor, Color fillColor)
         {
             var texture = new Texture2D(graphics, width, height);
             var colorData = new Color[width * height];
@@ -13,14 +13,14 @@ namespace Sweeper
             {
                 for(int j = 0; j < height; j++)
                 {
-                    if (i < borderWidth || i >= width - borderWidth || j < borderWidth || j >= height - borderWidth)
-                        colorData[i + (j*width)] = Color.Black;
-                    else
-                        colorData[i + (j * width)] = Color.White;
+					if (i < borderWidth || i >= width - borderWidth || j < borderWidth || j >= height - borderWidth)
+						colorData[i + (j * width)] = borderColor;
+					else
+						colorData[i + (j * width)] = fillColor;
                 }
             }
-            texture.SetData(colorData);
+            texture.SetData(colorData);						
             return texture;
-        }
-    }
+        }		
+	}
 }
