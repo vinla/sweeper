@@ -15,6 +15,8 @@ namespace Sweeper
 		[MenuOption("New Game", 0)]
 		public void NewGame()
 		{
+            MainScene.Difficulty = 1;
+            MainScene.Score = 0;
             SceneManager.StartScene<MainScene>();
 		}
 

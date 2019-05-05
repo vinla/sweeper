@@ -29,9 +29,11 @@ namespace Sweeper
             _keyBindings.Add(Tuple.Create(Keys.Up, GameInput.MoveUp));
             _keyBindings.Add(Tuple.Create(Keys.Down, GameInput.MoveDown));
 			_keyBindings.Add(Tuple.Create(Keys.D1, GameInput.IdentifySkill));
-            _keyBindings.Add(Tuple.Create(Keys.D2, GameInput.DisarmSkill));
+            _keyBindings.Add(Tuple.Create(Keys.D2, GameInput.TeleportSkill));
             _keyBindings.Add(Tuple.Create(Keys.Escape, GameInput.CancelSkill));
-		}
+            _keyBindings.Add(Tuple.Create(Keys.Enter, GameInput.ConfirmTarget));
+            _keyBindings.Add(Tuple.Create(Keys.Space, GameInput.ConfirmTarget));
+        }
 
         public void EarlyUpdate(GameTime time)
         {
@@ -79,7 +81,8 @@ namespace Sweeper
         MoveLeft,
         MoveRight,
 		IdentifySkill,
-        DisarmSkill,
-		CancelSkill
+        TeleportSkill,
+		CancelSkill,
+        ConfirmTarget
     }
 }

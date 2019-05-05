@@ -12,15 +12,19 @@ namespace Sweeper
 		{
 			Width = width;
 			Height = height;
-			_tiles = new MapTile[width * height];			
-			for (int i = 0; i < width; i++)
-				for (int j = 0; j < height; j++)
-					_tiles[i + (j * width)] = new MapTile(i, j);
+			_tiles = new MapTile[width * height];
+            for (int i = 0; i < width; i++)
+                for (int j = 0; j < height; j++)
+                {
+                    _tiles[i + (j * width)] = new MapTile(i, j) { TileType = MapTileType.Blocked };                    
+                }
 		}
 
 		public int Width { get; }
 
 		public int Height { get; }
+
+        public MapTile[] Tiles => _tiles;
 
 		public MapTile GetTileAt(Point p)
 		{

@@ -40,12 +40,17 @@ namespace Sweeper
 			Scene.Controllers.Push(idController);
 		}
 
-        [InputAction(GameInput.DisarmSkill)]
-        public void UseDisarm()
+        [InputAction(GameInput.TeleportSkill)]
+        public void UseTeleport()
         {
-            var disarmController = new Scenes.DisarmController(Scene);
-            disarmController.Initialise();
-            Scene.Controllers.Push(disarmController);
+            if (Scene.Teleports > 0)
+            {
+                var teleportController = new Scenes.TeleportController(Scene);
+                teleportController.Initialise();
+                Scene.Controllers.Push(teleportController);
+            }
+            else
+                Scene.WriteConsoleMessage("No Teleport Scrolls!");
         }
 
         [InputAction(GameInput.MenuBack)]

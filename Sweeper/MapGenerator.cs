@@ -12,6 +12,16 @@ namespace Sweeper
         {
             var rng = new Random();
             var map = new Map(width, height);
+
+            for(int i = 0; i < Math.Min(difficulty + 5, width); i++)
+            {
+                for(int j = 0; j < Math.Min(difficulty + 5, height); j++)
+                {
+                    map.GetTileAt(i, j).TileType = MapTileType.Empty;
+                }
+            }
+
+
             for(int i = 0; i < difficulty;)
             {
                 var x = rng.Next(0, width);

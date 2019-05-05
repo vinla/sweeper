@@ -83,27 +83,7 @@ namespace Sweeper.Scenes
         {
             return mapTile.Adjacents.HasValue == false;
         }
-    }
-
-    public class DisarmController : SkillController
-    {
-        public DisarmController(MainScene scene) : base(scene)
-        { }
-
-        protected override void Action(MapTile mapTile)
-        {
-            foreach (var tile in Scene.Map.GetAdjacentTiles(mapTile))
-                tile.Adjacents = null;
-            mapTile.TileType = MapTileType.Empty;
-            mapTile.Adjacents = null;
-            Scene.ResolveTile(mapTile);
-        }
-
-        protected override bool IsValid(MapTile mapTile)
-        {
-            return mapTile.TileType == MapTileType.Hazard && mapTile.Adjacents.HasValue;
-        }
-    }
+    }    
 
     public static class Direction
     {
@@ -116,5 +96,5 @@ namespace Sweeper.Scenes
         public static Point Right => new Point(1, 0);
 
         public static Point[] CompassPoints => new[] { Up, Right, Down, Left };
-    }
+    }    
 }

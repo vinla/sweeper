@@ -14,6 +14,6 @@ namespace Sweeper
 
         public Point Location { get; }
 
-		public bool ShowValue { get; set; }
+        public bool IsVisible => Adjacents.HasValue || TileType == MapTileType.Blocked;
     }
 }

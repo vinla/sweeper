@@ -50,6 +50,7 @@
     <Compile Include="Scenes\BaseController.cs" />
     <Compile Include="Scenes\IdentifyController.cs" />
     <Compile Include="Scenes\InputActionAttribute.cs" />
+    <Compile Include="Scenes\DialogController.cs" />
     <Compile Include="Scenes\MainMenu.cs" />
     <Compile Include="Scene.cs" />
     <Compile Include="SceneManager.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="Scenes\PlayerController.cs" />
     <Compile Include="Scenes\SceneModule.cs" />
     <Compile Include="GameObjects\Spirit.cs" />
+    <Compile Include="Scenes\TeleportController.cs" />
     <Compile Include="Sweeper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
