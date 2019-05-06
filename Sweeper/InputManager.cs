@@ -8,11 +8,107 @@ namespace Sweeper
 {
     public class InputManager : IInputManager
     {
+        private readonly ControllerInputManager _controller;
+        private readonly KeyBoardInputManager _keyboard;
+
+        public InputManager()
+        {
+            _controller = new ControllerInputManager();
+            _keyboard = new KeyBoardInputManager();
+        }
+
+        public void EarlyUpdate(GameTime gameTime)
+        {
+            _controller.EarlyUpdate(gameTime);
+            _keyboard.EarlyUpdate(gameTime);
+        }
+
+        public void LateUpdate(GameTime gameTime)
+        {
+            _controller.LateUpdate(gameTime);
+            _keyboard.LateUpdate(gameTime);
+        }
+
+        public GameInput Test(params GameInput[] inputs)
+        {
+            var test = _controller.Test(inputs);
+            if (test == GameInput.None)
+                test = _keyboard.Test(inputs);
+            return test;
+        }
+
+        public bool WasInput(GameInput input)
+        {
+            return _controller.WasInput(input) || _keyboard.WasInput(input);
+        }
+    }
+
+    public class ControllerInputManager : IInputManager
+    {
+        private readonly List<Tuple<Buttons, GameInput>> _bindings;
+        private GamePadState _previousState;
+        private GamePadState _currentState;
+
+        public ControllerInputManager()
+        {
+            _bindings = new List<Tuple<Buttons, GameInput>>();
+            _bindings.Add(Tuple.Create(Buttons.DPadUp, GameInput.MenuUp));
+            _bindings.Add(Tuple.Create(Buttons.DPadDown, GameInput.MenuDown));
+            _bindings.Add(Tuple.Create(Buttons.A, GameInput.MenuSelect));
+            _bindings.Add(Tuple.Create(Buttons.B, GameInput.MenuBack));
+            _bindings.Add(Tuple.Create(Buttons.DPadLeft, GameInput.MoveLeft));
+            _bindings.Add(Tuple.Create(Buttons.DPadRight, GameInput.MoveRight));
+            _bindings.Add(Tuple.Create(Buttons.DPadUp, GameInput.MoveUp));
+            _bindings.Add(Tuple.Create(Buttons.DPadDown, GameInput.MoveDown));
+            _bindings.Add(Tuple.Create(Buttons.A, GameInput.IdentifySkill));
+            _bindings.Add(Tuple.Create(Buttons.B, GameInput.CancelSkill));
+        }
+
+        public void EarlyUpdate(GameTime gameTime)
+        {            
+            _currentState = GamePad.GetState(PlayerIndex.One);
+        }
+
+        public void LateUpdate(GameTime gameTime)
+        {
+            _previousState = GamePad.GetState(PlayerIndex.One);
+        }
+
+        public bool WasInput(GameInput input)
+        {
+            if (_currentState.IsConnected == false)
+                return false;
+
+            var buttons = _bindings.Where(kvp => kvp.Item2 == input).Select(kvp => kvp.Item1);
+            foreach(var button in buttons)
+            {
+                if (_currentState.IsButtonDown(button) && _previousState.IsButtonUp(button))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public GameInput Test(params GameInput[] inputs)
+        {
+            if (_currentState.IsConnected)
+            {
+                foreach (var input in inputs)
+                    if (WasInput(input))
+                        return input;
+            }
+
+            return GameInput.None;
+        }
+    }
+
+    public class KeyBoardInputManager : IInputManager
+    {
         private readonly List<Tuple<Keys, GameInput>> _keyBindings;
         private KeyboardState _previousState;
         private KeyboardState _currentState;        
 
-        public InputManager()
+        public KeyBoardInputManager()
         {
             _keyBindings = new List<Tuple<Keys, GameInput>>();
             _keyBindings.Add(Tuple.Create(Keys.Up, GameInput.MenuUp));

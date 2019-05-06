@@ -53,16 +53,16 @@ namespace Sweeper
                         target.Modifier = new Encrypted();
                     }
                     else if(target.Modifier is Empty && target.DiscoveredNodes == 0)
-                    {
-                        if(diceRoll < 0.015 && decryptorCount < 1)
-                        {
-                            target.Modifier = new Decryptor();
-                            decryptorCount++;
-                        }
-                        else if (diceRoll < 0.025 && uplinkCount < 3)
+                    {                        
+                        if (diceRoll < 0.025 && uplinkCount < 3)
                         {
                             target.Modifier = new Uplink();
                             uplinkCount++;
+                        }
+                        else if (diceRoll < 0.015 && decryptorCount < 1)
+                        {
+                            target.Modifier = new Decryptor();
+                            decryptorCount++;
                         }
 
                         if (diceRoll > 0.9 && uplinkCount < 10)

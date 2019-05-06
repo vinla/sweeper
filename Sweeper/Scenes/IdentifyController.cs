@@ -81,7 +81,7 @@ namespace Sweeper.Scenes
 
         protected override bool IsValid(MapTile mapTile)
         {
-            return mapTile.Discovered == false;
+            return mapTile != null && mapTile.Discovered == false;
         }
     }    
 
