@@ -36,20 +36,30 @@ namespace Sweeper
             }
 
             var uplinkCount = 0;
-            var bitCoinCount = 0; 
+            var bitCoinCount = 0;
+            var decryptorCount = 0;
 
             for (int i = 0; i < map.Width; i++)
                 for (int j = 0; j < map.Height; j++)
                 {
+                    if (i == 0 && j == 0)
+                        continue;
+
                     var diceRoll = rng.NextDouble();
                     var target = map.GetTileAt(i, j);
-                    if(target.Modifier is Empty && target.DiscoveredNodes > 0 && diceRoll > 0.8)
+                    var encDiff = 1 - (MainScene.Difficulty / 250f);
+                    if(target.Modifier is Empty && target.DiscoveredNodes > 0 && diceRoll > encDiff)
                     {
                         target.Modifier = new Encrypted();
                     }
                     else if(target.Modifier is Empty && target.DiscoveredNodes == 0)
                     {
-                        if (diceRoll < 0.1 && uplinkCount < 3)
+                        if(diceRoll < 0.015 && decryptorCount < 1)
+                        {
+                            target.Modifier = new Decryptor();
+                            decryptorCount++;
+                        }
+                        else if (diceRoll < 0.025 && uplinkCount < 3)
                         {
                             target.Modifier = new Uplink();
                             uplinkCount++;

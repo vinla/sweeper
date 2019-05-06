@@ -39,7 +39,9 @@ namespace Sweeper
 
         public static int Difficulty = 1;
 
-        public static int BitCoin = 0;
+        public static int Bank = 0;
+
+        public int BitCoin = 0;
 
         public List<TracePenalty> Penalties { get; }
 
@@ -122,11 +124,12 @@ namespace Sweeper
                 var offset = Matrix.CreateTranslation(0, 20, 0);
                 spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, offset);
 
-                spriteBatch.DrawString(_gameFont, $"Alerts: {Penalties.Count(p => p == TracePenalty.NodeFault)}", new Vector2(10, 10), Color.White);
-                spriteBatch.DrawString(_gameFont, $"Misses: {Penalties.Count(p => p == TracePenalty.HackError)}", new Vector2(10, 35), Color.White);
-                spriteBatch.DrawString(_gameFont, $"Detection Level: {Trace}", new Vector2(10, 60), Color.White);
+                var color = Trace > 75 ? Color.Red : Color.White;
+                spriteBatch.DrawString(_gameFont, $"Detection Level: {Trace}", new Vector2(10, 10), color);
+                spriteBatch.DrawString(_gameFont, $"Bit Coin: {BitCoin}", new Vector2(10, 35), Color.White);
 
-                spriteBatch.DrawString(_gameFont, $"Bit Coin: {BitCoin}", new Vector2(10, 110), Color.Yellow);
+                spriteBatch.DrawString(_gameFont, $"Bank: {Bank}", new Vector2(10, 110), Color.Yellow);
+
 
                 spriteBatch.End();
             }
@@ -153,7 +156,7 @@ namespace Sweeper
 		{
             if(Map.Tiles.Any(t => t.Modifier is Node && !t.Discovered) == false)
             {
-                ShowDialog("Level Complete", NextLevel);
+                ShowDialog("Level Complete", NextLevel);                
             }
             else if (Trace > 99 )
             {
@@ -173,6 +176,7 @@ namespace Sweeper
         public void NextLevel()
         {
             Difficulty++;
+            Bank += BitCoin;
             Reset();
         }
 
@@ -193,12 +197,13 @@ namespace Sweeper
                 WriteConsoleMessage("Node hacked");
                 tile.Modifier = new HackedNode();
                 tile.Discovered = true;
-                MainScene.BitCoin += 5;
+                BitCoin ++;
             }
             else
             {
                 WriteConsoleMessage("Error! No Node detected.");
                 Penalties.Add(TracePenalty.HackError);
+                tile.Modifier = new Corrupted();
                 ResolveTile(tile);
             }
         }
