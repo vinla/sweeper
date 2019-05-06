@@ -1,23 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Sweeper.GameObjects;
 
 namespace Sweeper
 {
     public static class MapGenerator
     {
-        public static Map Generate(int width, int height, int difficulty)
+        public static Map Generate(int width, int height, int difficulty, MainScene scene)
         {
             var rng = new Random();
-            var map = new Map(width, height);
+            var map = new Map(width, height, scene);
 
             for(int i = 0; i < Math.Min(difficulty + 5, width); i++)
             {
                 for(int j = 0; j < Math.Min(difficulty + 5, height); j++)
                 {
-                    map.GetTileAt(i, j).TileType = MapTileType.Empty;
+                    map.GetTileAt(i, j).Modifier = new Empty();
                 }
             }
 
@@ -29,15 +26,43 @@ namespace Sweeper
 
                 if( x > 2 || y > 2 )
                 {
-                    var tile = map.GetTileAt(x, y);
-                    if (tile.TileType == MapTileType.Empty)
+                    var rt = map.GetTileAt(x, y);
+                    if (rt.Modifier is Empty)
                     {
-                        tile.TileType = MapTileType.Hazard;
+                        rt.Modifier = new Node();
                         i++;
                     }
                 }
             }
 
+            var uplinkCount = 0;
+            var bitCoinCount = 0; 
+
+            for (int i = 0; i < map.Width; i++)
+                for (int j = 0; j < map.Height; j++)
+                {
+                    var diceRoll = rng.NextDouble();
+                    var target = map.GetTileAt(i, j);
+                    if(target.Modifier is Empty && target.DiscoveredNodes > 0 && diceRoll > 0.8)
+                    {
+                        target.Modifier = new Encrypted();
+                    }
+                    else if(target.Modifier is Empty && target.DiscoveredNodes == 0)
+                    {
+                        if (diceRoll < 0.1 && uplinkCount < 3)
+                        {
+                            target.Modifier = new Uplink();
+                            uplinkCount++;
+                        }
+
+                        if (diceRoll > 0.9 && uplinkCount < 10)
+                        {
+                            target.Modifier = new BitCoin();
+                            bitCoinCount++;
+                        }
+                    }
+                }            
+            
             return map;
         }
     }

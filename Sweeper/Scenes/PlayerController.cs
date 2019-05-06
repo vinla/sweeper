@@ -43,14 +43,10 @@ namespace Sweeper
         [InputAction(GameInput.TeleportSkill)]
         public void UseTeleport()
         {
-            if (Scene.Teleports > 0)
-            {
-                var teleportController = new Scenes.TeleportController(Scene);
-                teleportController.Initialise();
-                Scene.Controllers.Push(teleportController);
-            }
-            else
-                Scene.WriteConsoleMessage("No Teleport Scrolls!");
+            
+            var teleportController = new Scenes.TeleportController(Scene);
+            teleportController.Initialise();
+            Scene.Controllers.Push(teleportController);
         }
 
         [InputAction(GameInput.MenuBack)]
@@ -61,19 +57,18 @@ namespace Sweeper
 
 		private void MovePlayer(int x, int y)
 		{
-			var target = new Point(Scene.PlayerPosition.X + x, Scene.PlayerPosition.Y + y);
+            var target = Scene.Player.Location.Offset(x, y);
 
 
 			if (target.X < 0 || target.X >= Scene.Map.Width || target.Y < 0 || target.Y >= Scene.Map.Height)
 				return;
 
 			var targetTile = Scene.Map.GetTileAt(target);
-			if (targetTile.TileType == MapTileType.Blocked)
+			if (targetTile.Modifier.CanEnter == false)
 				return;
 
-			Scene.SetPlayerPosition(target);
-			Scene.ResolveTile(targetTile);
-			Scene.PlayerMoved = true;
+			Scene.Player.MoveTo(targetTile);
+			Scene.EnterTile(targetTile);
 		}
 	}
 }

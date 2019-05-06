@@ -9,7 +9,7 @@ namespace Sweeper.Scenes
 
         public TeleportController(MainScene scene) : base(scene)
         {
-            _target = scene.Map.GetTileAt(scene.PlayerPosition);
+            _target = scene.Map.GetTileAt(scene.Player.Location);
         }
 
         [InputAction(GameInput.MoveUp)]
@@ -41,10 +41,8 @@ namespace Sweeper.Scenes
         {
             if (TargetIsClear())
             {
-                Scene.SetPlayerPosition(_target.Location);
+                Scene.Player.MoveTo(_target);
                 Scene.Controllers.Pop();
-                Scene.PlayerMoved = true;
-                Scene.Teleports--;
             }
         }
 
@@ -66,7 +64,7 @@ namespace Sweeper.Scenes
 
         private bool TargetIsClear()
         {
-            return _target.TileType == MapTileType.Empty && _target.Adjacents.HasValue;
+            return _target.Modifier.CanEnter && _target.Discovered;
         }
 
         public override void DrawOverlay(SpriteBatch spriteBatch)

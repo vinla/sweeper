@@ -42,6 +42,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GameObjects\Hacker.cs" />
+    <Compile Include="GameObjects\Uplink.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="ISceneManager.cs" />
     <Compile Include="IntegerExtensions.cs" />
@@ -57,12 +59,10 @@
     <Compile Include="Scenes\MainScene.cs" />
     <Compile Include="GameObjects\Map.cs" />
     <Compile Include="GameObjects\MapTile.cs" />
-    <Compile Include="GameObjects\MapTileType.cs" />
     <Compile Include="Scenes\MenuScene.cs" />
     <Compile Include="Scenes\PauseMenuScene.cs" />
     <Compile Include="Scenes\PlayerController.cs" />
     <Compile Include="Scenes\SceneModule.cs" />
-    <Compile Include="GameObjects\Spirit.cs" />
     <Compile Include="Scenes\TeleportController.cs" />
     <Compile Include="Sweeper.cs" />
     <Compile Include="Program.cs" />
