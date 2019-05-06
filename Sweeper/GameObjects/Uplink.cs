@@ -102,6 +102,15 @@ namespace Sweeper.GameObjects
         }
     }
 
+    public class Corrupted : TileModifier
+    {
+        public override void Draw(Rectangle tileRect, MapTile tile, SpriteBatch spriteBatch, Dictionary<string, Texture2D> textues, SpriteFont font)
+        {            
+            var texture = textues["GridCell"];
+            spriteBatch.Draw(texture, tileRect, Color.PaleVioletRed);
+        }
+    }
+
     public class BitCoin : Empty
     {
         public override void Draw(Rectangle tileRect, MapTile tile, SpriteBatch spriteBatch, Dictionary<string, Texture2D> textures, SpriteFont font)
@@ -117,8 +126,35 @@ namespace Sweeper.GameObjects
         public override void Enter(MapTile tile)
         {
             tile.Modifier = new Empty();
-            MainScene.BitCoin++;
+            tile.Map.Scene.BitCoin++;
             tile.Map.Scene.WriteConsoleMessage("BitCoin collected");
+            base.Enter(tile);
+        }
+    }
+
+    public class Decryptor : Empty
+    {
+        public override void Draw(Rectangle tileRect, MapTile tile, SpriteBatch spriteBatch, Dictionary<string, Texture2D> textures, SpriteFont font)
+        {
+            base.Draw(tileRect, tile, spriteBatch, textures, font);
+            var texture = textures["GridCell"];
+            var pickupRect = new Rectangle(tileRect.Location.Offset(6, 6), tileRect.Size.Offset(-12, -12));
+            spriteBatch.Draw(texture, pickupRect, Color.Red);
+            spriteBatch.DrawString(font, "D", tileRect
+                .Location.Offset(8, 8).ToVector2(), Color.White);
+        }
+
+        public override void Enter(MapTile tile)
+        {
+            if (tile.Map.Scene.BitCoin >= 10)
+            {
+                tile.Map.Scene.BitCoin -= 10;
+                foreach (var target in tile.Map.Tiles.Where(t => t.Modifier is Encrypted))
+                {
+                    target.Modifier = new Empty();
+                }
+                tile.Modifier = new Empty();                
+            }
             base.Enter(tile);
         }
     }
@@ -137,8 +173,12 @@ namespace Sweeper.GameObjects
 
         public override void Enter(MapTile tile)
         {
-            tile.Map.Scene.Player.Trail.Clear();
-            tile.Modifier = new Empty();
+            if (tile.Map.Scene.BitCoin >= 5)
+            {
+                tile.Map.Scene.BitCoin -= 5;
+                tile.Map.Scene.Player.Trail.Clear();
+                tile.Modifier = new Empty();                
+            }
             base.Enter(tile);
         }
     }    

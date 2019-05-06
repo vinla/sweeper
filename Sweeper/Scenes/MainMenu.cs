@@ -16,7 +16,7 @@ namespace Sweeper
 		public void NewGame()
 		{
             MainScene.Difficulty = 20;
-            MainScene.BitCoin = 0;
+            MainScene.Bank = 0;
             SceneManager.StartScene<MainScene>();
 		}
 
