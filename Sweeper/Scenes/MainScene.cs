@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Sweeper.GameObjects;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -11,13 +12,13 @@ namespace Sweeper
 		private readonly ISceneManager _sceneManager;
         private readonly IInputManager _inputManager;
         private readonly ContentManager _contentManager;
+        private readonly Dictionary<string, Texture2D> _textures;
 		private readonly Stack<BaseController> _controllerStack;
         private readonly List<string> _consoleMessages;        
 		
         private Texture2D _playerSprite;
 		private SpriteFont _gameFont;
-        private int _countdown;
-
+     
 		public MainScene(ISceneManager sceneManager, IInputManager inputManager, ContentManager contentManager)
 		{
 			_sceneManager = sceneManager;
@@ -25,40 +26,33 @@ namespace Sweeper
             _contentManager = contentManager;
 			_controllerStack = new Stack<BaseController>();
             _consoleMessages = new List<string>();
+            _textures = new Dictionary<string, Texture2D>();
 
             var playerController = new PlayerController(this);
 			playerController.Initialise();
 			_controllerStack.Push(playerController);
-			
-            PlayerPosition = new Point(0, 0);
-            Map = MapGenerator.Generate(20, 15, Difficulty);
 
-            _countdown = 20;
-            Teleports = 3;
+            Player = new Hacker();
+            Map = MapGenerator.Generate(20, 15, Difficulty, this);
+            Penalties = new List<TracePenalty>();
 		}
 
         public static int Difficulty = 1;
 
-        public static int Score = 0;
+        public static int BitCoin = 0;
+
+        public List<TracePenalty> Penalties { get; }
+
+        public int Trace => System.Math.Max(0, Penalties.Cast<int>().Sum() + Player.Trail.Where(t => t.Modifier is HackedNode == false).Distinct().Count());
 
 		public Map Map { get; }
 
-		public Point PlayerPosition { get; private set; }
+		public Hacker Player { get; }
 
-		public bool PlayerMoved { get; set;  }
-
-        public int Teleports { get; set; }
-
-        public int Countdown => _countdown;
-
-		public Stack<BaseController> Controllers => _controllerStack;
+        public Stack<BaseController> Controllers => _controllerStack;
 
 		public SpriteFont Font => _gameFont;
-
-		public void SetPlayerPosition(Point p)
-		{
-			PlayerPosition = p;
-		}
+		
 
 		public void Reset()
 		{
@@ -75,13 +69,20 @@ namespace Sweeper
         {
             _playerSprite = _contentManager.Load<Texture2D>("ball");
 			_gameFont = _contentManager.Load<SpriteFont>("MainMenu");
+            _textures.Add("Player", _playerSprite);
+            Player.MoveTo(Map.GetTileAt(0, 0));
+            EnterTile(Map.GetTileAt(Player.Location));
         }
 
         public override void Draw(GameTime gameTime, GraphicsDevice graphicsDevice)
 		{
 			graphicsDevice.Clear(Color.Olive);
 
-            var gridSprite = graphicsDevice.CreateRectangeTexture(48, 48, 2, Color.Black, Color.White);
+            if (_textures.ContainsKey("GridCell") == false)
+            {
+                var gridSprite = graphicsDevice.CreateRectangeTexture(48, 48, 2, Color.Black, Color.White);
+                _textures.Add("GridCell", gridSprite);
+            }
 
             using (var spriteBatch = new SpriteBatch(graphicsDevice))
             {
@@ -92,24 +93,18 @@ namespace Sweeper
                     for (int j = 0; j < Map.Height; j++)
                     {
 						var tile = Map.GetTileAt(i, j);
-						var color = GetTileColor(tile);
-						var gridPosition = new Vector2(i * 48, j * 48);
-						spriteBatch.Draw(gridSprite, gridPosition, color);
-						if (tile.Adjacents > 0)
-						{
-							var offset = new Vector2(8, 8);
-							spriteBatch.DrawString(_gameFont, tile.Adjacents.ToString(), gridPosition + offset, Color.Black);
-						}
+                        tile.Draw(spriteBatch, _textures, _gameFont);						
                     }
                 }
 				
-				spriteBatch.Draw(_playerSprite, new Rectangle(PlayerPosition.X * 48, PlayerPosition.Y * 48, 48, 48), Color.White);
-                var playerTile = Map.GetTileAt(PlayerPosition);
-                if(playerTile.Adjacents.GetValueOrDefault() > 0)
+				spriteBatch.Draw(_playerSprite, new Rectangle(Player.Location.X * 48, Player.Location.Y * 48, 48, 48), Color.White);
+
+                var playerTile = Map.GetTileAt(Player.Location);
+                if(playerTile.Modifier is Empty && playerTile.AdjacentTiles.Count(t => t.Modifier.Detectable) > 0)
                 {
                     var offset = new Vector2(8, 8);
-                    var gridPosition = new Vector2(PlayerPosition.X * 48, PlayerPosition.Y * 48);
-                    spriteBatch.DrawString(_gameFont, playerTile.Adjacents.ToString(), gridPosition + offset, Color.White);
+                    var gridPosition = new Vector2(playerTile.Location.X * 48, playerTile.Location.Y * 48);
+                    spriteBatch.DrawString(_gameFont, playerTile.AdjacentTiles.Count(t => t.Modifier.Detectable).ToString(), gridPosition + offset, Color.White);
                 }
 				_controllerStack.Peek().DrawOverlay(spriteBatch);
 
@@ -127,10 +122,11 @@ namespace Sweeper
                 var offset = Matrix.CreateTranslation(0, 20, 0);
                 spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, offset);
 
-                spriteBatch.DrawString(_gameFont, $"Level: {Difficulty}", new Vector2(10, 10), Color.White);
-                spriteBatch.DrawString(_gameFont, $"Score: {Score}", new Vector2(10, 35), Color.White);
-                spriteBatch.DrawString(_gameFont, $"Countdown: {_countdown}" , new Vector2(10, 60), Color.White);
-                spriteBatch.DrawString(_gameFont, $"Teleports: {Teleports}", new Vector2(10, 85), Color.White);
+                spriteBatch.DrawString(_gameFont, $"Alerts: {Penalties.Count(p => p == TracePenalty.NodeFault)}", new Vector2(10, 10), Color.White);
+                spriteBatch.DrawString(_gameFont, $"Misses: {Penalties.Count(p => p == TracePenalty.HackError)}", new Vector2(10, 35), Color.White);
+                spriteBatch.DrawString(_gameFont, $"Detection Level: {Trace}", new Vector2(10, 60), Color.White);
+
+                spriteBatch.DrawString(_gameFont, $"Bit Coin: {BitCoin}", new Vector2(10, 110), Color.Yellow);
 
                 spriteBatch.End();
             }
@@ -151,47 +147,17 @@ namespace Sweeper
 
                 spriteBatch.End();
             }
-        }
-
-        public Color GetTileColor(MapTile mapTile)
-        {
-            if (mapTile.IsVisible == false)
-                return Color.Black;
-            else
-            {
-                switch(mapTile.TileType)
-                {
-                    case MapTileType.Blocked:
-                        return Color.Gray;
-					case MapTileType.Hazard:
-						return Color.Red;
-					case MapTileType.Treasure:
-						return Color.Gold;
-					case MapTileType.Start:
-						return Color.LightSteelBlue;
-                    default:
-						return mapTile.Adjacents > 0 ? Color.Yellow : Color.White;
-                }
-            }
-        }
+        }        
 
 		public override void Update(GameTime gameTime)
 		{
-            if(Map.Tiles.Any(t => t.TileType == MapTileType.Hazard && t.Adjacents.HasValue == false) == false)
+            if(Map.Tiles.Any(t => t.Modifier is Node && !t.Discovered) == false)
             {
                 ShowDialog("Level Complete", NextLevel);
             }
-            else if(Countdown < 1)
+            else if (Trace > 99 )
             {
-                ShowDialog("Times run out! Game Over", () => _sceneManager.EndScene());
-            }
-            else
-            {
-                var tile = Map.GetTileAt(PlayerPosition);
-                ResolveTile(tile);
-                if (PlayerMoved)
-                    _countdown--;
-                PlayerMoved = false;                
+                ShowDialog("You have been traced. Game Over!", () => _sceneManager.EndScene());
             }
 
             _controllerStack.Peek().ProcessInput(gameTime, _inputManager);
@@ -207,7 +173,6 @@ namespace Sweeper
         public void NextLevel()
         {
             Difficulty++;
-            Score += Countdown + (Teleports * 10);
             Reset();
         }
 
@@ -216,36 +181,45 @@ namespace Sweeper
             _consoleMessages.Insert(0, message);
         }
 
+        public void EnterTile(MapTile tile)
+        {
+            tile.Modifier.Enter(tile);
+        }
+
+        public void Hack(MapTile tile)
+        {
+            if (tile.Modifier is Node)
+            {
+                WriteConsoleMessage("Node hacked");
+                tile.Modifier = new HackedNode();
+                tile.Discovered = true;
+                MainScene.BitCoin += 5;
+            }
+            else
+            {
+                WriteConsoleMessage("Error! No Node detected.");
+                Penalties.Add(TracePenalty.HackError);
+                ResolveTile(tile);
+            }
+        }
+
 		public void ResolveTile(MapTile tile)
 		{
-			if (tile.Adjacents.HasValue)
+			if (tile.Discovered || tile.Modifier is Blocked)
 				return;
 
-			if(tile.TileType == MapTileType.Hazard)
-			{
-                if(PlayerPosition == tile.Location)
-                {
-                    _countdown -= 4;
-                    _consoleMessages.Insert(0, "Anomaly triggered!");
-                }
-                else
-                {
-                    _countdown += 4;
-                    _consoleMessages.Insert(0, "Anomaly resolved");
-                }
-				tile.Adjacents = 0;                
-				return;
-			}
+            tile.Discovered = true;
 
-            if (tile.TileType == MapTileType.Blocked)
-                return;
-
-			var adjacentTiles = Map.GetAdjacentTiles(tile);
-            tile.Adjacents = adjacentTiles.Count(t => t.TileType == MapTileType.Hazard);
-
-			if (tile.Adjacents == 0)
-				foreach (var next in adjacentTiles)
+			if (tile.DiscoveredNodes == 0)
+				foreach (var next in tile.AdjacentTiles)
 					ResolveTile(next);
 		}		
 	}
+
+    public enum TracePenalty
+    {
+        NodeFault = 10,
+        HackError = 5,
+        EncryptionBreak = 3
+    }
 }

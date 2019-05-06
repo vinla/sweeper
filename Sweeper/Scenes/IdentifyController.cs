@@ -42,7 +42,7 @@ namespace Sweeper.Scenes
 
         private void Execute(Point direction)
         {
-            var target = Scene.Map.GetTileAt(Scene.PlayerPosition.Offset(direction));
+            var target = Scene.Map.GetTileAt(Scene.Player.Location.Offset(direction));
             if (IsValid(target))
             {
                 Action(target);
@@ -52,7 +52,7 @@ namespace Sweeper.Scenes
 
         public override void DrawOverlay(SpriteBatch spriteBatch)
         {
-            var origin = Scene.PlayerPosition;
+            var origin = Scene.Player.Location;
             var overlay = spriteBatch.GraphicsDevice.CreateRectangeTexture(48, 48, 4, Color.White, Color.Transparent);
 
             foreach(var point in Direction.CompassPoints)
@@ -76,12 +76,12 @@ namespace Sweeper.Scenes
         public IdentifyController(MainScene scene) : base(scene) { }
         protected override void Action(MapTile mapTile)
         {
-            Scene.ResolveTile(mapTile);
+            Scene.Hack(mapTile);
         }
 
         protected override bool IsValid(MapTile mapTile)
         {
-            return mapTile.Adjacents.HasValue == false;
+            return mapTile.Discovered == false;
         }
     }    
 

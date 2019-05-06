@@ -29,6 +29,7 @@ namespace Sweeper
             _keyBindings.Add(Tuple.Create(Keys.Up, GameInput.MoveUp));
             _keyBindings.Add(Tuple.Create(Keys.Down, GameInput.MoveDown));
 			_keyBindings.Add(Tuple.Create(Keys.D1, GameInput.IdentifySkill));
+            _keyBindings.Add(Tuple.Create(Keys.LeftShift, GameInput.IdentifySkill));
             _keyBindings.Add(Tuple.Create(Keys.D2, GameInput.TeleportSkill));
             _keyBindings.Add(Tuple.Create(Keys.Escape, GameInput.CancelSkill));
             _keyBindings.Add(Tuple.Create(Keys.Enter, GameInput.ConfirmTarget));
