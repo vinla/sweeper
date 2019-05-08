@@ -42,6 +42,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GameObjects\FloatText.cs" />
     <Compile Include="GameObjects\Hacker.cs" />
     <Compile Include="GameObjects\Uplink.cs" />
     <Compile Include="InputManager.cs" />

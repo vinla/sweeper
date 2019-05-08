@@ -14,6 +14,7 @@ namespace Sweeper
         private readonly ContentManager _contentManager;
         private readonly Dictionary<string, Texture2D> _textures;
 		private readonly Stack<BaseController> _controllerStack;
+		private readonly List<FloatText> _floatingText;
         private readonly List<string> _consoleMessages;        
 		
         private Texture2D _playerSprite;
@@ -26,6 +27,7 @@ namespace Sweeper
             _contentManager = contentManager;
 			_controllerStack = new Stack<BaseController>();
             _consoleMessages = new List<string>();
+			_floatingText = new List<FloatText>();
             _textures = new Dictionary<string, Texture2D>();
 
             var playerController = new PlayerController(this);
@@ -110,13 +112,13 @@ namespace Sweeper
                     var gridPosition = new Vector2(playerTile.Location.X * 48, playerTile.Location.Y * 48);
                     spriteBatch.DrawString(_gameFont, playerTile.AdjacentTiles.Count(t => t.Modifier.Detectable).ToString(), gridPosition + offset, Color.White);
                 }
-				_controllerStack.Peek().DrawOverlay(spriteBatch);
-
-                DrawHUD(graphicsDevice);
-                DrawConsoleMessages(graphicsDevice);
+				_controllerStack.Peek().DrawOverlay(spriteBatch);                
 
                 spriteBatch.End();
             }
+
+			DrawHUD(graphicsDevice);
+			DrawConsoleMessages(graphicsDevice);
 		}
 
         private void DrawHUD(GraphicsDevice graphicsDevice)
@@ -142,14 +144,13 @@ namespace Sweeper
         {
             using (var spriteBatch = new SpriteBatch(graphicsDevice))
             {
-                var offset = Matrix.CreateTranslation(0, 320, 0);
-                spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, offset);
+				var offsetTransform = Matrix.CreateTranslation(320, 0, 0);
+				spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, offsetTransform);
                 
-                for(int i = 0; i < 10; i++)
-                {
-                    if( i < _consoleMessages.Count )
-                        spriteBatch.DrawString(_gameFont, _consoleMessages[i], new Vector2(10, 25 * i), Color.White);
-                }
+                foreach(var floatText in _floatingText)
+				{
+					floatText.Draw(spriteBatch);
+				}
 
                 spriteBatch.End();
             }
@@ -167,7 +168,24 @@ namespace Sweeper
             }
 
             _controllerStack.Peek().ProcessInput(gameTime, _inputManager);
-        }
+
+			for (int i = 0; i < _floatingText.Count;)
+			{
+				var floatingText = _floatingText[i];
+				if (floatingText.IsActive)
+				{
+					floatingText.Update(gameTime);
+					i++;
+				}
+				else
+					_floatingText.RemoveAt(i);
+			}
+		}
+
+		public void FloatText(string text, Vector2 location, Color color)
+		{
+			_floatingText.Add(new FloatText(text, color, _gameFont, location, new Vector2(0, -15), 1.5f));
+		}
 
         private void ShowDialog(string message, System.Action action)
         {
@@ -197,7 +215,7 @@ namespace Sweeper
         {
             if (tile.Modifier is Node)
             {
-                WriteConsoleMessage("Node hacked");
+				FloatText("Node hacked!", new Vector2(tile.Location.X * 48, tile.Location.Y * 48), Color.Yellow);
                 tile.Modifier = new HackedNode();
                 tile.Discovered = true;
                 BitCoin ++;
