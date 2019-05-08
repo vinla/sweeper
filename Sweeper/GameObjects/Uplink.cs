@@ -26,12 +26,13 @@ namespace Sweeper.GameObjects
     {
         public override void Draw(Rectangle tileRect, MapTile tile, SpriteBatch spriteBatch, Dictionary<string, Texture2D> textues, SpriteFont font)
         {
-            var color = tile.Map.Scene.Player.Trail.Contains(tile) ? Color.Yellow : Color.White;
+            var color = tile.Map.Scene.Player.Trail.Contains(tile) ? Color.LightGreen : Color.DarkGreen;
+            var fg = tile.Map.Scene.Player.Trail.Contains(tile) ? Color.Black : Color.White;
             var texture = textues["GridCell"];
             var encText = tile.Map.GetEncryption(tile.Location);
             spriteBatch.Draw(texture, tileRect, color);
             if (tile.DiscoveredNodes > 0)
-                spriteBatch.DrawString(font, encText.Convert(tile.DiscoveredNodes).ToString(), new Vector2(tile.Location.X * 48 + 8, tile.Location.Y * 48 + 8), Color.Black);
+                spriteBatch.DrawString(font, encText.Convert(tile.DiscoveredNodes).ToString(), new Vector2(tile.Location.X * 48 + 8, tile.Location.Y * 48 + 8), fg);
         }
 
         public override void Enter(MapTile tile)
@@ -46,7 +47,7 @@ namespace Sweeper.GameObjects
         public override void Draw(Rectangle tileRect, MapTile tile, SpriteBatch spriteBatch, Dictionary<string, Texture2D> textues, SpriteFont font)
         {
             var texture = textues["GridCell"];
-            spriteBatch.Draw(texture, tileRect, Color.Gray);
+            spriteBatch.Draw(texture, tileRect, Color.Black);
         }
 
         public override bool CanEnter => false;
@@ -54,28 +55,37 @@ namespace Sweeper.GameObjects
 
     public class Node : TileModifier
     {
-        public override void Draw(Rectangle tileRect, MapTile tile, SpriteBatch spriteBatch, Dictionary<string, Texture2D> textues, SpriteFont font)
+        public override void Draw(Rectangle tileRect, MapTile tile, SpriteBatch spriteBatch, Dictionary<string, Texture2D> textures, SpriteFont font)
         {
-            var texture = textues["GridCell"];
+            var texture = textures["GridCell"];
             spriteBatch.Draw(texture, tileRect, Color.Red);
+            var rect = tileRect;
+            rect.Inflate(-8, -8);
+            spriteBatch.Draw(textures["Node"], rect, Color.White);
         }
 
         public override bool Detectable => true;
 
         public override void Enter(MapTile tile)
         {
-            tile.Map.Scene.WriteConsoleMessage("Unauthorized access attempt!");
-            tile.Map.Scene.Penalties.Add(TracePenalty.NodeFault);
+            if (!tile.Discovered)
+            {
+                tile.Map.Scene.FloatText("Unauthorized access attempt!", tile, Color.OrangeRed);
+                tile.Map.Scene.Penalties.Add(TracePenalty.NodeFault);
+            }
             base.Enter(tile);
         }
     }
 
     public class HackedNode : TileModifier
     {
-        public override void Draw(Rectangle tileRect, MapTile tile, SpriteBatch spriteBatch, Dictionary<string, Texture2D> textues, SpriteFont font)
+        public override void Draw(Rectangle tileRect, MapTile tile, SpriteBatch spriteBatch, Dictionary<string, Texture2D> textures, SpriteFont font)
         {
-            var texture = textues["GridCell"];
-            spriteBatch.Draw(texture, tileRect, Color.Green);
+            var texture = textures["GridCell"];
+            spriteBatch.Draw(texture, tileRect, Color.White);
+            var rect = tileRect;
+            rect.Inflate(-8, -8);
+            spriteBatch.Draw(textures["Node"], rect, Color.White);
         }
 
         public override bool Detectable => true;
@@ -96,7 +106,7 @@ namespace Sweeper.GameObjects
         public override void Enter(MapTile tile)
         {
             tile.Modifier = new Empty();
-            tile.Map.Scene.WriteConsoleMessage("Encryption Broken");
+            tile.Map.Scene.FloatText("Encryption Broken", tile, Color.OrangeRed);
             tile.Map.Scene.Penalties.Add(TracePenalty.EncryptionBreak);
             base.Enter(tile);
         }
@@ -127,7 +137,7 @@ namespace Sweeper.GameObjects
         {
             tile.Modifier = new Empty();
             tile.Map.Scene.BitCoin++;
-            tile.Map.Scene.WriteConsoleMessage("BitCoin collected");
+            tile.Map.Scene.FloatText("BitCoin collected", tile, Color.Yellow);
             base.Enter(tile);
         }
     }

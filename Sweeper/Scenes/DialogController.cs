@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Linq;
 
 namespace Sweeper.Scenes
 {
@@ -22,9 +23,7 @@ namespace Sweeper.Scenes
 
         public override void DrawOverlay(SpriteBatch spriteBatch)
         {
-            var dialogBox = spriteBatch.GraphicsDevice.CreateRectangeTexture(480, 320, 4, Color.Black, Color.Red);
-            spriteBatch.Draw(dialogBox, new Vector2(280, 192), Color.White);
-            spriteBatch.DrawString(Scene.Font, _message, new Vector2(340, 280), Color.Yellow);
+            spriteBatch.DrawString(Scene.Fonts["Readout"], _message, new Vector2(230, 280), Color.Yellow);
             base.DrawOverlay(spriteBatch);
         }
     }

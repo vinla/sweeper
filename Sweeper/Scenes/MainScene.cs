@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace Sweeper
 {
@@ -15,10 +16,9 @@ namespace Sweeper
         private readonly Dictionary<string, Texture2D> _textures;
 		private readonly Stack<BaseController> _controllerStack;
 		private readonly List<FloatText> _floatingText;
-        private readonly List<string> _consoleMessages;        
 		
         private Texture2D _playerSprite;
-		private SpriteFont _gameFont;
+		private Dictionary<string, SpriteFont> _fonts;
      
 		public MainScene(ISceneManager sceneManager, IInputManager inputManager, ContentManager contentManager)
 		{
@@ -26,9 +26,9 @@ namespace Sweeper
             _inputManager = inputManager;
             _contentManager = contentManager;
 			_controllerStack = new Stack<BaseController>();
-            _consoleMessages = new List<string>();
 			_floatingText = new List<FloatText>();
             _textures = new Dictionary<string, Texture2D>();
+            _fonts = new Dictionary<string, SpriteFont>();
 
             var playerController = new PlayerController(this);
 			playerController.Initialise();
@@ -57,8 +57,7 @@ namespace Sweeper
 
 		public Stack<BaseController> Controllers => _controllerStack;
 
-		public SpriteFont Font => _gameFont;
-		
+		public Dictionary<string, SpriteFont> Fonts => _fonts;		
 
 		public void Reset()
 		{
@@ -74,15 +73,18 @@ namespace Sweeper
         public override void Initialise()
         {
             _playerSprite = _contentManager.Load<Texture2D>("ball");
-			_gameFont = _contentManager.Load<SpriteFont>("MainMenu");
+            _fonts.Add("Menu", _contentManager.Load<SpriteFont>("MainMenu"));
+            _fonts.Add("Console", _contentManager.Load<SpriteFont>("Console"));
+            _fonts.Add("Readout", _contentManager.Load<SpriteFont>("Readout"));
             _textures.Add("Player", _playerSprite);
+            _textures.Add("Node", _contentManager.Load<Texture2D>("node"));
             Player.MoveTo(Map.GetTileAt(0, 0));
             EnterTile(Map.GetTileAt(Player.Location));
         }
 
         public override void Draw(GameTime gameTime, GraphicsDevice graphicsDevice)
 		{
-			graphicsDevice.Clear(Color.Olive);
+			graphicsDevice.Clear(Color.Black);
 
             if (_textures.ContainsKey("GridCell") == false)
             {
@@ -99,7 +101,7 @@ namespace Sweeper
                     for (int j = 0; j < Map.Height; j++)
                     {
 						var tile = Map.GetTileAt(i, j);
-                        tile.Draw(spriteBatch, _textures, _gameFont);						
+                        tile.Draw(spriteBatch, _textures, _fonts.Values.First());
                     }
                 }
 				
@@ -110,7 +112,7 @@ namespace Sweeper
                 {
                     var offset = new Vector2(8, 8);
                     var gridPosition = new Vector2(playerTile.Location.X * 48, playerTile.Location.Y * 48);
-                    spriteBatch.DrawString(_gameFont, playerTile.AdjacentTiles.Count(t => t.Modifier.Detectable).ToString(), gridPosition + offset, Color.White);
+                    spriteBatch.DrawString(_fonts.Values.First(), playerTile.AdjacentTiles.Count(t => t.Modifier.Detectable).ToString(), gridPosition + offset, Color.White);
                 }
 				_controllerStack.Peek().DrawOverlay(spriteBatch);                
 
@@ -123,18 +125,31 @@ namespace Sweeper
 
         private void DrawHUD(GraphicsDevice graphicsDevice)
         {
+            var pixel = graphicsDevice.CreateRectangeTexture(1, 1, 0, Color.White, Color.White);
             using (var spriteBatch = new SpriteBatch(graphicsDevice))
             {
                 var offset = Matrix.CreateTranslation(0, 20, 0);
+                var color = Color.Green;
+                if (Trace > 50)
+                    color = Color.Orange;
+                if (Trace > 75)
+                    color = Color.Red;
+
                 spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, offset);
+                spriteBatch.DrawString(_fonts["Console"], "VINDOS_1.24.77 [STABLE]", new Vector2(10, 5), Color.Green);
+                spriteBatch.DrawString(_fonts["Console"], "VPC connected...", new Vector2(10, 35), Color.Green);
 
-                var color = Trace > 75 ? Color.Red : Color.White;
-                spriteBatch.DrawString(_gameFont, $"Detection Level: {Trace}", new Vector2(10, 10), color);
-				spriteBatch.DrawString(_gameFont, $"Remaining Nodes: {RemainingNodes}", new Vector2(10, 35), Color.White);
-				spriteBatch.DrawString(_gameFont, $"Bit Coin: {BitCoin}", new Vector2(10, 60), Color.White);
+                spriteBatch.DrawString(_fonts["Console"], "Bits Shifted", new Vector2(10, 70), Color.LightGreen);
+                spriteBatch.DrawString(_fonts["Console"], $"{BitCoin}", new Vector2(220, 70), Color.White);
 
-                spriteBatch.DrawString(_gameFont, $"Bank: {Bank}", new Vector2(10, 110), Color.Yellow);
+                spriteBatch.DrawString(_fonts["Console"], "Remaining Nodes", new Vector2(10, 105), Color.LightGreen);
+                spriteBatch.DrawString(_fonts["Console"], $"{RemainingNodes}", new Vector2(220, 105), Color.White);
 
+                spriteBatch.DrawString(_fonts["Console"], "Detection Level", new Vector2(10, 140), Color.LightGreen);
+                spriteBatch.Draw(pixel, new Rectangle(215, 135, 36, 30), color);
+                spriteBatch.DrawString(_fonts["Console"], $"{Trace}", new Vector2(220, 140), Color.White);
+
+                
 
                 spriteBatch.End();
             }
@@ -190,7 +205,7 @@ namespace Sweeper
 
 		public void FloatText(string text, Vector2 location, Color color)
 		{
-			_floatingText.Add(new FloatText(text, color, _gameFont, location, new Vector2(0, -15), 1.5f));
+			_floatingText.Add(new FloatText(text, color, _fonts.Values.First(), location, new Vector2(0, -45), .7f));
 		}
 
         private void ShowDialog(string message, System.Action action)
@@ -205,11 +220,6 @@ namespace Sweeper
             Difficulty++;
             Bank += BitCoin;
             Reset();
-        }
-
-        public void WriteConsoleMessage(string message)
-        {
-            _consoleMessages.Insert(0, message);
         }
 
         public void EnterTile(MapTile tile)

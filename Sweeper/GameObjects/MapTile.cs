@@ -37,7 +37,7 @@ namespace Sweeper
             }
             else
             {
-                spriteBatch.Draw(textures["GridCell"], rect, Color.Black);
+                spriteBatch.Draw(textures["GridCell"], rect, Color.Gray);
             }
         }        
     }
