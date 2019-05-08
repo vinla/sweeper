@@ -182,6 +182,12 @@ namespace Sweeper
 			}
 		}
 
+		public void FloatText(string text, MapTile tile, Color color)
+		{
+			var location = new Vector2(tile.Location.X * 48 - 20, tile.Location.Y * 48 - 16);
+			FloatText(text, location, color);
+		}
+
 		public void FloatText(string text, Vector2 location, Color color)
 		{
 			_floatingText.Add(new FloatText(text, color, _gameFont, location, new Vector2(0, -15), 1.5f));
@@ -215,14 +221,14 @@ namespace Sweeper
         {
             if (tile.Modifier is Node)
             {
-				FloatText("Node hacked!", new Vector2(tile.Location.X * 48, tile.Location.Y * 48), Color.Yellow);
+				FloatText("Node hacked!", tile, Color.Yellow);
                 tile.Modifier = new HackedNode();
                 tile.Discovered = true;
                 BitCoin ++;
             }
             else
             {
-                WriteConsoleMessage("Error! No Node detected.");
+                FloatText("No Node detected!", tile, Color.OrangeRed);
                 Penalties.Add(TracePenalty.HackError);
                 tile.Modifier = new Corrupted();
                 ResolveTile(tile);
