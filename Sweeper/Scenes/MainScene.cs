@@ -51,7 +51,9 @@ namespace Sweeper
 
 		public Hacker Player { get; }
 
-        public Stack<BaseController> Controllers => _controllerStack;
+		public int RemainingNodes => Map.Tiles.Count(t => t.Modifier is Node && !t.Discovered);
+
+		public Stack<BaseController> Controllers => _controllerStack;
 
 		public SpriteFont Font => _gameFont;
 		
@@ -126,7 +128,8 @@ namespace Sweeper
 
                 var color = Trace > 75 ? Color.Red : Color.White;
                 spriteBatch.DrawString(_gameFont, $"Detection Level: {Trace}", new Vector2(10, 10), color);
-                spriteBatch.DrawString(_gameFont, $"Bit Coin: {BitCoin}", new Vector2(10, 35), Color.White);
+				spriteBatch.DrawString(_gameFont, $"Remaining Nodes: {RemainingNodes}", new Vector2(10, 35), Color.White);
+				spriteBatch.DrawString(_gameFont, $"Bit Coin: {BitCoin}", new Vector2(10, 60), Color.White);
 
                 spriteBatch.DrawString(_gameFont, $"Bank: {Bank}", new Vector2(10, 110), Color.Yellow);
 
@@ -154,9 +157,9 @@ namespace Sweeper
 
 		public override void Update(GameTime gameTime)
 		{
-            if(Map.Tiles.Any(t => t.Modifier is Node && !t.Discovered) == false)
+            if(RemainingNodes == 0)
             {
-                ShowDialog("Level Complete", NextLevel);                
+				ShowDialog("Level Complete", NextLevel);
             }
             else if (Trace > 99 )
             {
