@@ -53,7 +53,7 @@
     <Compile Include="Scenes\BaseController.cs" />
     <Compile Include="Scenes\IdentifyController.cs" />
     <Compile Include="Scenes\InputActionAttribute.cs" />
-    <Compile Include="Scenes\DialogController.cs" />
+    <Compile Include="Scenes\LevelCompleteScene.cs" />
     <Compile Include="Scenes\MainMenu.cs" />
     <Compile Include="Scene.cs" />
     <Compile Include="SceneManager.cs" />

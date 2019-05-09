@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using Sweeper.Scenes;
 
 namespace Sweeper
 {
@@ -146,7 +147,7 @@ namespace Sweeper
                 spriteBatch.DrawString(_fonts["Console"], $"{RemainingNodes}", new Vector2(220, 105), Color.White);
 
                 spriteBatch.DrawString(_fonts["Console"], "Detection Level", new Vector2(10, 140), Color.LightGreen);
-                spriteBatch.Draw(pixel, new Rectangle(215, 135, 36, 30), color);
+                spriteBatch.Draw(pixel, new Rectangle(215, 135, Trace > 99 ? 52 : 36, 30), color);
                 spriteBatch.DrawString(_fonts["Console"], $"{Trace}", new Vector2(220, 140), Color.White);
 
                 
@@ -175,11 +176,11 @@ namespace Sweeper
 		{
             if(RemainingNodes == 0)
             {
-				ShowDialog("Level Complete", NextLevel);
+                LevelComplete(false);
             }
             else if (Trace > 99 )
             {
-                ShowDialog("You have been traced. Game Over!", () => _sceneManager.EndScene());
+                LevelComplete(true); 
             }
 
             _controllerStack.Peek().ProcessInput(gameTime, _inputManager);
@@ -197,6 +198,15 @@ namespace Sweeper
 			}
 		}
 
+        private void LevelComplete(bool gameOver)
+        {
+            _sceneManager.EndScene();
+            var levelEnd = gameOver ? (EndLevelScene) new Scenes.GameOverScene(this, _inputManager, _sceneManager, _contentManager) 
+                : (EndLevelScene) new Scenes.LevelCompleteScene(this, _inputManager, _sceneManager, _contentManager);
+            levelEnd.Initialise();
+            _sceneManager.RunScene(levelEnd);
+        }
+
 		public void FloatText(string text, MapTile tile, Color color)
 		{
 			var location = new Vector2(tile.Location.X * 48 - 20, tile.Location.Y * 48 - 16);
@@ -207,20 +217,6 @@ namespace Sweeper
 		{
 			_floatingText.Add(new FloatText(text, color, _fonts.Values.First(), location, new Vector2(0, -45), .7f));
 		}
-
-        private void ShowDialog(string message, System.Action action)
-        {
-            var dialogContoller = new Scenes.DialogController(this, message, action);
-            dialogContoller.Initialise();
-            _controllerStack.Push(dialogContoller);
-        }
-
-        public void NextLevel()
-        {
-            Difficulty++;
-            Bank += BitCoin;
-            Reset();
-        }
 
         public void EnterTile(MapTile tile)
         {
