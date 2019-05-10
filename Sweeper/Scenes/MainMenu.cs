@@ -25,5 +25,9 @@ namespace Sweeper
         {
             SceneManager.Exit();
         }
-	}
+
+        public override string Background => "title";
+
+        public override Point Offset => new Point(120, 300);
+    }
 }

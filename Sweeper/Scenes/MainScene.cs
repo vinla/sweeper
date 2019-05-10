@@ -73,12 +73,15 @@ namespace Sweeper
 
         public override void Initialise()
         {
-            _playerSprite = _contentManager.Load<Texture2D>("ball");
+            _playerSprite = _contentManager.Load<Texture2D>("hacker");
             _fonts.Add("Menu", _contentManager.Load<SpriteFont>("MainMenu"));
             _fonts.Add("Console", _contentManager.Load<SpriteFont>("Console"));
             _fonts.Add("Readout", _contentManager.Load<SpriteFont>("Readout"));
             _textures.Add("Player", _playerSprite);
             _textures.Add("Node", _contentManager.Load<Texture2D>("node"));
+            _textures.Add("HackedNode", _contentManager.Load<Texture2D>("hacked_node"));
+            _textures.Add("Corrupt", _contentManager.Load<Texture2D>("corrupt"));
+            _textures.Add("Cypher", _contentManager.Load<Texture2D>("cypher"));
             Player.MoveTo(Map.GetTileAt(0, 0));
             EnterTile(Map.GetTileAt(Player.Location));
         }

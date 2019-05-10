@@ -15,6 +15,7 @@ namespace Sweeper
 		private List<Tuple<string, Action>> _menuOptions;
 		private int _selectedOption;
 		private SpriteFont _menuFont;
+        private Texture2D _background;
 
 		public MenuScene(ISceneManager sceneManager, IInputManager inputManager, ContentManager contentManager)
 		{
@@ -30,6 +31,7 @@ namespace Sweeper
 		public override void Initialise()
 		{
 			_menuFont = _contentManager.Load<SpriteFont>("MainMenu");
+            _background = _contentManager.Load<Texture2D>(Background);
             var methods = this.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public);
             _menuOptions =
                 methods
@@ -42,16 +44,17 @@ namespace Sweeper
 
 		public override void Draw(GameTime gameTime, GraphicsDevice graphicsDevice)
 		{
-			graphicsDevice.Clear(Color.DarkRed);
+			graphicsDevice.Clear(Color.Black);
 			using (var spriteBatch = new SpriteBatch(graphicsDevice))
 			{
 				spriteBatch.Begin();
+                spriteBatch.Draw(_background, new Vector2(0, 0), Color.White);
 				for (int i = 0; i < _menuOptions.Count; i++)
 				{
 					spriteBatch.DrawString(
 						_menuFont,
 						_menuOptions[i].Item1,
-						new Vector2(100, 50 + (100 * i)),
+						new Vector2(Offset.X, Offset.Y + (100 * i)),
 						i == _selectedOption ? Color.Yellow : Color.White);
 				}
 				spriteBatch.End();
@@ -72,6 +75,10 @@ namespace Sweeper
 		{
             _menuOptions[optionIndex].Item2();
 		}
+
+        public abstract string Background { get; }
+
+        public abstract Point Offset { get; }
 	}
 
 	public class MenuOptionAttribute : Attribute

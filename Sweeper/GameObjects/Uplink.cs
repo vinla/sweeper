@@ -58,10 +58,8 @@ namespace Sweeper.GameObjects
         public override void Draw(Rectangle tileRect, MapTile tile, SpriteBatch spriteBatch, Dictionary<string, Texture2D> textures, SpriteFont font)
         {
             var texture = textures["GridCell"];
-            spriteBatch.Draw(texture, tileRect, Color.Red);
-            var rect = tileRect;
-            rect.Inflate(-8, -8);
-            spriteBatch.Draw(textures["Node"], rect, Color.White);
+            spriteBatch.Draw(texture, tileRect, Color.Red);            
+            spriteBatch.Draw(textures["HackedNode"], tileRect, Color.White);
         }
 
         public override bool Detectable => true;
@@ -82,10 +80,8 @@ namespace Sweeper.GameObjects
         public override void Draw(Rectangle tileRect, MapTile tile, SpriteBatch spriteBatch, Dictionary<string, Texture2D> textures, SpriteFont font)
         {
             var texture = textures["GridCell"];
-            spriteBatch.Draw(texture, tileRect, Color.White);
-            var rect = tileRect;
-            rect.Inflate(-8, -8);
-            spriteBatch.Draw(textures["Node"], rect, Color.White);
+            spriteBatch.Draw(texture, tileRect, Color.DarkGreen);
+            spriteBatch.Draw(textures["Node"], tileRect, Color.White);
         }
 
         public override bool Detectable => true;
@@ -114,10 +110,11 @@ namespace Sweeper.GameObjects
 
     public class Corrupted : TileModifier
     {
-        public override void Draw(Rectangle tileRect, MapTile tile, SpriteBatch spriteBatch, Dictionary<string, Texture2D> textues, SpriteFont font)
+        public override void Draw(Rectangle tileRect, MapTile tile, SpriteBatch spriteBatch, Dictionary<string, Texture2D> textures, SpriteFont font)
         {            
-            var texture = textues["GridCell"];
+            var texture = textures["GridCell"];
             spriteBatch.Draw(texture, tileRect, Color.PaleVioletRed);
+            spriteBatch.Draw(textures["Corrupt"], tileRect, Color.White);
         }
     }
 
@@ -126,11 +123,8 @@ namespace Sweeper.GameObjects
         public override void Draw(Rectangle tileRect, MapTile tile, SpriteBatch spriteBatch, Dictionary<string, Texture2D> textures, SpriteFont font)
         {
             base.Draw(tileRect, tile, spriteBatch, textures, font);
-            var texture = textures["GridCell"];
-            var pickupRect = new Rectangle(tileRect.Location.Offset(6, 6), tileRect.Size.Offset(-12, -12));
-            spriteBatch.Draw(texture, pickupRect, Color.Gold);
-            spriteBatch.DrawString(font, "B", tileRect
-                .Location.Offset(8, 8).ToVector2(), Color.Red);
+            var texture = textures["Cypher"];            
+            spriteBatch.Draw(texture, tileRect, Color.White);            
         }
 
         public override void Enter(MapTile tile)
