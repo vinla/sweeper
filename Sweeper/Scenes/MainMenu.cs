@@ -12,15 +12,39 @@ namespace Sweeper
 		{		
 		}
 
-		[MenuOption("New Game", 0)]
+		[MenuOption("Standard Run", 0)]
 		public void NewGame()
 		{
-            MainScene.Difficulty = 5;
-            MainScene.Bank = 0;
+            MainScene.Optons = new RunOptions { Ramp = 1, Penalties = new[] {10, 5, 3}, GameType = "standard" };
+            MainScene.Difficulty = 10;
+            MainScene.Score = 0;
+            MainScene.HighScore = DataManager.ReadHighScore(MainScene.Optons.GameType);
             SceneManager.StartScene<MainScene>();
 		}
 
-        [MenuOption("Exit", 1)]
+        [MenuOption("Flawless Run", 1)]
+        public void ChallengeRun()
+        {
+            MainScene.Optons = new RunOptions { Ramp = 2, Penalties = new[] {100, 100, 3 }, GameType = "flawless" };
+            MainScene.Difficulty = 20;
+            MainScene.Score = 0;
+            MainScene.HighScore = DataManager.ReadHighScore(MainScene.Optons.GameType);
+            SceneManager.StartScene<MainScene>();
+        }
+
+        [MenuOption("How to play", 2)]
+        public void Instructions()
+        {
+
+        }
+
+        [MenuOption("Credits", 3)]
+        public void Credits()
+        {
+            SceneManager.StartScene<Scenes.CreditsScene>();
+        }
+
+        [MenuOption("Exit", 4)]
         public void Exit()
         {
             SceneManager.Exit();
@@ -28,6 +52,6 @@ namespace Sweeper
 
         public override string Background => "title";
 
-        public override Point Offset => new Point(120, 300);
+        public override Point Offset => new Point(120, 270);
     }
 }

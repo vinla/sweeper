@@ -42,15 +42,18 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DataManager.cs" />
     <Compile Include="GameObjects\FloatText.cs" />
     <Compile Include="GameObjects\Hacker.cs" />
     <Compile Include="GameObjects\Uplink.cs" />
+    <Compile Include="RunOptions.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="ISceneManager.cs" />
     <Compile Include="IntegerExtensions.cs" />
     <Compile Include="GrpahicsExtensions.cs" />
     <Compile Include="MapGenerator.cs" />
     <Compile Include="Scenes\BaseController.cs" />
+    <Compile Include="Scenes\CreditsScene.cs" />
     <Compile Include="Scenes\IdentifyController.cs" />
     <Compile Include="Scenes\InputActionAttribute.cs" />
     <Compile Include="Scenes\LevelCompleteScene.cs" />

@@ -47,7 +47,7 @@ namespace Sweeper
 
                     var diceRoll = rng.NextDouble();
                     var target = map.GetTileAt(i, j);
-                    var encDiff = 1 - (MainScene.Difficulty / 250f);
+                    var encDiff = 1 - (difficulty / 250f);
                     if(target.Modifier is Empty && target.DiscoveredNodes > 0 && diceRoll > encDiff)
                     {
                         target.Modifier = new Encrypted();

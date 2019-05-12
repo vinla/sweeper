@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -29,6 +27,8 @@ namespace Sweeper.Scenes
         protected SpriteFont Font { get; private set; }
 
         protected SpriteFont SmallFont { get; private set; }
+
+        protected MainScene Scene => _mainScene;
 
         public override void Initialise()
         {
@@ -79,20 +79,67 @@ namespace Sweeper.Scenes
 
     public class LevelCompleteScene : EndLevelScene
     {
+        private readonly List<string> _scoreInfo;
+        private int _score = 0;
+
         public LevelCompleteScene(MainScene mainScene, IInputManager inputManager, ISceneManager sceneManager, ContentManager contentManager)
             : base(mainScene, inputManager, sceneManager, contentManager)
         {
+            _scoreInfo = new List<string>();
+        }
 
+        public override void Initialise()
+        {
+            base.Initialise();
+            _scoreInfo.Add($"Nodes hacked ({Scene.NodesHacked}) x {Scoring.HackedModeMultiplier} = {Scene.NodesHacked * Scoring.HackedModeMultiplier}");
+            _score += Scene.NodesHacked * Scoring.HackedModeMultiplier;
+            _scoreInfo.Add($"Bit coins ({Scene.BitCoin}) x {Scoring.BitCoinMultiplier} = {Scene.BitCoin* Scoring.BitCoinMultiplier}");
+            _score += Scene.BitCoin * Scoring.BitCoinMultiplier;
+
+            if (Scene.Penalties.Count(p => p == TracePenalty.HackError || p == TracePenalty.Alert) == 0)
+            {
+                _scoreInfo.Add($"No mistakes = {Scoring.NoMistakes}");
+                _score += Scoring.NoMistakes;
+            }
+            
+            if (Scene.RemainingBitCoin == 0)
+            {
+                _scoreInfo.Add($"All coins collected = {Scoring.AllCoins}");
+                _score += Scoring.AllCoins;
+            }
+
+            if (MainScene.Difficulty >= 15 && Scene.ResetUsed == false)
+            {
+                _scoreInfo.Add($"No resets (15 or more nodes) = {Scoring.NoResets}");
+                _score += Scoring.NoResets;
+            }
         }
 
         protected override void DrawInfo(SpriteBatch spriteBatch)
         {
             spriteBatch.DrawString(Font, $"Level Complete", new Vector2(150, 200), Color.Yellow);
+
+            int ypos = 250;
+
+            foreach(var line in _scoreInfo)
+            {
+                spriteBatch.DrawString(SmallFont, line, new Vector2(160, ypos), Color.White);
+                ypos += 30;
+            }
+
+            spriteBatch.DrawString(SmallFont, $"Total Score = {_score}", new Vector2(160, ypos), Color.Yellow);
         }
 
         protected override void Continue()
         {
-            MainScene.Difficulty++;
+            MainScene.Difficulty = Math.Min(50, MainScene.Difficulty += MainScene.Optons.Ramp);
+            MainScene.Score += _score;
+            if (MainScene.Score > MainScene.HighScore)
+            {
+                DataManager.SaveHighScore(MainScene.Score, MainScene.Optons.GameType);
+                MainScene.HighScore = MainScene.Score;
+            }
+
             SceneManager.EndScene();
             SceneManager.StartScene<MainScene>();
         }
@@ -117,5 +164,18 @@ namespace Sweeper.Scenes
         {
             SceneManager.EndScene();
         }
+    }
+
+    public static class Scoring
+    {
+        public static int HackedModeMultiplier => 100;
+
+        public static int BitCoinMultiplier => 20;
+
+        public static int NoMistakes => 500;
+
+        public static int AllCoins => 200;
+
+        public static int NoResets => 250;
     }
 }

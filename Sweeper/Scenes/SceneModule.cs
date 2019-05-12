@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autofac;
+﻿using Autofac;
 
 namespace Sweeper
 {
@@ -11,6 +6,7 @@ namespace Sweeper
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
+            builder.RegisterType<Scenes.CreditsScene>();
 			builder.RegisterType<MainMenu>();
 			builder.RegisterType<MainScene>();
             builder.RegisterType<Scenes.PauseMenuScene>();

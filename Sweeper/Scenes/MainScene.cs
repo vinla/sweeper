@@ -17,7 +17,7 @@ namespace Sweeper
         private readonly Dictionary<string, Texture2D> _textures;
 		private readonly Stack<BaseController> _controllerStack;
 		private readonly List<FloatText> _floatingText;
-		
+        
         private Texture2D _playerSprite;
 		private Dictionary<string, SpriteFont> _fonts;
      
@@ -30,7 +30,7 @@ namespace Sweeper
 			_floatingText = new List<FloatText>();
             _textures = new Dictionary<string, Texture2D>();
             _fonts = new Dictionary<string, SpriteFont>();
-
+            
             var playerController = new PlayerController(this);
 			playerController.Initialise();
 			_controllerStack.Push(playerController);
@@ -40,21 +40,31 @@ namespace Sweeper
             Penalties = new List<TracePenalty>();
 		}
 
-        public static int Difficulty = 1;
+        public static int Difficulty = 0;
 
-        public static int Bank = 0;
+        public static int HighScore = 0;
+
+        public static RunOptions Optons;
+
+        public static int Score = 0;
 
         public int BitCoin = 0;
 
         public List<TracePenalty> Penalties { get; }
 
-        public int Trace => System.Math.Max(0, Penalties.Cast<int>().Sum() + Player.Trail.Where(t => t.Modifier is HackedNode == false).Distinct().Count());
+        public int Trace => System.Math.Max(0, Penalties.Cast<int>().Select(p => MainScene.Optons.Penalties[p]).Sum() + Player.Trail.Where(t => t.Modifier is HackedNode == false).Distinct().Count());
 
 		public Map Map { get; }
 
 		public Hacker Player { get; }
 
 		public int RemainingNodes => Map.Tiles.Count(t => t.Modifier is Node && !t.Discovered);
+
+        public int NodesHacked => Map.Tiles.Count(t => t.Modifier is HackedNode);
+
+        public int RemainingBitCoin => Map.Tiles.Count(t => t.Modifier is BitCoin);
+
+        public bool ResetUsed { get; set; }
 
 		public Stack<BaseController> Controllers => _controllerStack;
 
@@ -114,9 +124,9 @@ namespace Sweeper
                 var playerTile = Map.GetTileAt(Player.Location);
                 if(playerTile.Modifier is Empty && playerTile.AdjacentTiles.Count(t => t.Modifier.Detectable) > 0)
                 {
-                    var offset = new Vector2(8, 8);
+                    var offset = new Vector2(5, 5);
                     var gridPosition = new Vector2(playerTile.Location.X * 48, playerTile.Location.Y * 48);
-                    spriteBatch.DrawString(_fonts.Values.First(), playerTile.AdjacentTiles.Count(t => t.Modifier.Detectable).ToString(), gridPosition + offset, Color.White);
+                    spriteBatch.DrawString(_fonts.Values.First(), playerTile.AdjacentTiles.Count(t => t.Modifier.Detectable).ToString(), gridPosition + offset, Color.Black);
                 }
 				_controllerStack.Peek().DrawOverlay(spriteBatch);                
 
@@ -143,7 +153,7 @@ namespace Sweeper
                 spriteBatch.DrawString(_fonts["Console"], "VINDOS_1.24.77 [STABLE]", new Vector2(10, 5), Color.Green);
                 spriteBatch.DrawString(_fonts["Console"], "VPC connected...", new Vector2(10, 35), Color.Green);
 
-                spriteBatch.DrawString(_fonts["Console"], "Bits Shifted", new Vector2(10, 70), Color.LightGreen);
+                spriteBatch.DrawString(_fonts["Console"], "Bits Coins", new Vector2(10, 70), Color.LightGreen);
                 spriteBatch.DrawString(_fonts["Console"], $"{BitCoin}", new Vector2(220, 70), Color.White);
 
                 spriteBatch.DrawString(_fonts["Console"], "Remaining Nodes", new Vector2(10, 105), Color.LightGreen);
@@ -153,8 +163,9 @@ namespace Sweeper
                 spriteBatch.Draw(pixel, new Rectangle(215, 135, Trace > 99 ? 52 : 36, 30), color);
                 spriteBatch.DrawString(_fonts["Console"], $"{Trace}", new Vector2(220, 140), Color.White);
 
+                spriteBatch.DrawString(_fonts["Console"], $"Hi Score {MainScene.HighScore}", new Vector2(62, 645), Color.Green);
+                spriteBatch.DrawString(_fonts["Console"], $"Score {MainScene.Score}", new Vector2(100, 675), Color.Yellow);
                 
-
                 spriteBatch.End();
             }
         }
@@ -232,8 +243,7 @@ namespace Sweeper
             {
 				FloatText("Node hacked!", tile, Color.Yellow);
                 tile.Modifier = new HackedNode();
-                tile.Discovered = true;
-                BitCoin ++;
+                tile.Discovered = true;                
             }
             else
             {
@@ -259,8 +269,8 @@ namespace Sweeper
 
     public enum TracePenalty
     {
-        NodeFault = 10,
-        HackError = 5,
-        EncryptionBreak = 3
+        Alert = 0,
+        HackError = 1,
+        EncryptionBreak = 2
     }
 }

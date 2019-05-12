@@ -69,7 +69,7 @@ namespace Sweeper.GameObjects
             if (!tile.Discovered)
             {
                 tile.Map.Scene.FloatText("Unauthorized access attempt!", tile, Color.OrangeRed);
-                tile.Map.Scene.Penalties.Add(TracePenalty.NodeFault);
+                tile.Map.Scene.Penalties.Add(TracePenalty.Alert);
             }
             base.Enter(tile);
         }
@@ -180,6 +180,7 @@ namespace Sweeper.GameObjects
             if (tile.Map.Scene.BitCoin >= 5)
             {
                 tile.Map.Scene.BitCoin -= 5;
+                tile.Map.Scene.ResetUsed = true;
                 tile.Map.Scene.Player.Trail.Clear();
                 tile.Modifier = new Empty();                
             }
