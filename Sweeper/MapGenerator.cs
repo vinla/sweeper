@@ -48,12 +48,12 @@ namespace Sweeper
                     var diceRoll = rng.NextDouble();
                     var target = map.GetTileAt(i, j);
                     var encDiff = 1 - (difficulty / 250f);
-                    if(target.Modifier is Empty && target.DiscoveredNodes > 0 && diceRoll > encDiff)
+                    if (target.Modifier is Empty && target.DiscoveredNodes > 0 && diceRoll > encDiff)
                     {
                         target.Modifier = new Encrypted();
                     }
-                    else if(target.Modifier is Empty && target.DiscoveredNodes == 0)
-                    {                        
+                    else if (target.Modifier is Empty && target.DiscoveredNodes == 0)
+                    {
                         if (diceRoll < 0.025 && uplinkCount < 3)
                         {
                             target.Modifier = new Uplink();
@@ -71,8 +71,8 @@ namespace Sweeper
                             bitCoinCount++;
                         }
                     }
-                }            
-            
+                }
+
             return map;
         }
     }
