@@ -35,7 +35,7 @@ namespace Sweeper
         [MenuOption("How to play", 2)]
         public void Instructions()
         {
-
+            SceneManager.StartScene<Scenes.HowToPlayScene>();
         }
 
         [MenuOption("Credits", 3)]

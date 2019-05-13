@@ -54,6 +54,7 @@
     <Compile Include="MapGenerator.cs" />
     <Compile Include="Scenes\BaseController.cs" />
     <Compile Include="Scenes\CreditsScene.cs" />
+    <Compile Include="Scenes\HowToPlayScene.cs" />
     <Compile Include="Scenes\IdentifyController.cs" />
     <Compile Include="Scenes\InputActionAttribute.cs" />
     <Compile Include="Scenes\LevelCompleteScene.cs" />

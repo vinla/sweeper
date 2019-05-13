@@ -10,6 +10,7 @@ namespace Sweeper
 			builder.RegisterType<MainMenu>();
 			builder.RegisterType<MainScene>();
             builder.RegisterType<Scenes.PauseMenuScene>();
+            builder.RegisterType<Scenes.HowToPlayScene>();
 		}
 	}
 }
