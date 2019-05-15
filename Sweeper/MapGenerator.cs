@@ -1,5 +1,6 @@
 ﻿using System;
 using Sweeper.GameObjects;
+using Sweeper.Scenes;
 
 namespace Sweeper
 {

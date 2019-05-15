@@ -1,16 +1,16 @@
 ﻿using Autofac;
 
-namespace Sweeper
+namespace Sweeper.Scenes
 {
 	public class SceneModule : Module
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
-            builder.RegisterType<Scenes.CreditsScene>();
+            builder.RegisterType<CreditsScene>();
 			builder.RegisterType<MainMenu>();
 			builder.RegisterType<MainScene>();
-            builder.RegisterType<Scenes.PauseMenuScene>();
-            builder.RegisterType<Scenes.HowToPlayScene>();
+            builder.RegisterType<PauseMenuScene>();
+            builder.RegisterType<HowToPlayScene>();
 		}
 	}
 }

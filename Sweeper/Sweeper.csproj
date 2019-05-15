@@ -42,21 +42,22 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Direction.cs" />
     <Compile Include="DataManager.cs" />
     <Compile Include="GameObjects\FloatText.cs" />
     <Compile Include="GameObjects\Hacker.cs" />
-    <Compile Include="GameObjects\Uplink.cs" />
+    <Compile Include="GameObjects\TileModifier.cs" />
     <Compile Include="RunOptions.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="ISceneManager.cs" />
     <Compile Include="IntegerExtensions.cs" />
     <Compile Include="GrpahicsExtensions.cs" />
     <Compile Include="MapGenerator.cs" />
-    <Compile Include="Scenes\BaseController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Scenes\CreditsScene.cs" />
     <Compile Include="Scenes\HowToPlayScene.cs" />
-    <Compile Include="Scenes\IdentifyController.cs" />
-    <Compile Include="Scenes\InputActionAttribute.cs" />
+    <Compile Include="Controllers\HackingController.cs" />
+    <Compile Include="InputActionAttribute.cs" />
     <Compile Include="Scenes\LevelCompleteScene.cs" />
     <Compile Include="Scenes\MainMenu.cs" />
     <Compile Include="Scene.cs" />
@@ -66,9 +67,9 @@
     <Compile Include="GameObjects\MapTile.cs" />
     <Compile Include="Scenes\MenuScene.cs" />
     <Compile Include="Scenes\PauseMenuScene.cs" />
-    <Compile Include="Scenes\PlayerController.cs" />
+    <Compile Include="Controllers\PlayerController.cs" />
     <Compile Include="Scenes\SceneModule.cs" />
-    <Compile Include="Scenes\TeleportController.cs" />
+    <Compile Include="GameObjects\TracePenalty.cs" />
     <Compile Include="Sweeper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

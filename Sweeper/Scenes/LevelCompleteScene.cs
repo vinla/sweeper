@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Sweeper.GameObjects;
 
 namespace Sweeper.Scenes
 {

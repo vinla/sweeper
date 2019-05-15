@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Sweeper.Scenes;
 
 namespace Sweeper
 {
@@ -32,15 +33,7 @@ namespace Sweeper
 			_sceneManager.SetContainer(_container);
 			_sceneManager.StartScene<MainMenu>();
             base.Initialize();
-        }
-
-        protected override void LoadContent()
-        {
-			
-        }
-        protected override void UnloadContent()
-        {
-        }
+        }        
 
         protected override void Update(GameTime gameTime)
         {

@@ -25,7 +25,7 @@ namespace Sweeper
                     Directory.CreateDirectory(Path.GetDirectoryName(file));
                 File.WriteAllText(file, score.ToString());
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 // Don't blow up because we can't write the score
             }

@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Sweeper.GameObjects;
+using Sweeper.Scenes;
 
 namespace Sweeper
 {

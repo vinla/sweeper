@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 
-namespace Sweeper
+namespace Sweeper.Scenes
 {
     public class MainMenu : MenuScene
 	{
@@ -35,13 +33,13 @@ namespace Sweeper
         [MenuOption("How to play", 2)]
         public void Instructions()
         {
-            SceneManager.StartScene<Scenes.HowToPlayScene>();
+            SceneManager.StartScene<HowToPlayScene>();
         }
 
         [MenuOption("Credits", 3)]
         public void Credits()
         {
-            SceneManager.StartScene<Scenes.CreditsScene>();
+            SceneManager.StartScene<CreditsScene>();
         }
 
         [MenuOption("Exit", 4)]

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using Sweeper.Scenes;
 
-namespace Sweeper
+namespace Sweeper.Controllers
 {
 	public class PlayerController : BaseController<MainScene>
 	{		
@@ -35,20 +36,11 @@ namespace Sweeper
 		[InputAction(GameInput.IdentifySkill)]
 		public void UseIndentify()
 		{
-			var idController = new Scenes.IdentifyController(Scene);
+			var idController = new HackingController(Scene);
 			idController.Initialise();
 			Scene.Controllers.Push(idController);
 		}
-
-        [InputAction(GameInput.TeleportSkill)]
-        public void UseTeleport()
-        {
-            
-            var teleportController = new Scenes.TeleportController(Scene);
-            teleportController.Initialise();
-            Scene.Controllers.Push(teleportController);
-        }
-
+        
         [InputAction(GameInput.MenuBack)]
         public void PauseGame()
         {

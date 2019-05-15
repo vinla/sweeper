@@ -4,10 +4,9 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using Sweeper.Scenes;
+using Sweeper.Controllers;
 
-namespace Sweeper
+namespace Sweeper.Scenes
 {
 	public class MainScene : Scene
 	{
@@ -215,8 +214,8 @@ namespace Sweeper
         private void LevelComplete(bool gameOver)
         {
             _sceneManager.EndScene();
-            var levelEnd = gameOver ? (EndLevelScene) new Scenes.GameOverScene(this, _inputManager, _sceneManager, _contentManager) 
-                : (EndLevelScene) new Scenes.LevelCompleteScene(this, _inputManager, _sceneManager, _contentManager);
+            var levelEnd = gameOver ? (EndLevelScene) new GameOverScene(this, _inputManager, _sceneManager, _contentManager) 
+                : (EndLevelScene) new LevelCompleteScene(this, _inputManager, _sceneManager, _contentManager);
             levelEnd.Initialise();
             _sceneManager.RunScene(levelEnd);
         }
@@ -266,11 +265,4 @@ namespace Sweeper
 					ResolveTile(next);
 		}		
 	}
-
-    public enum TracePenalty
-    {
-        Alert = 0,
-        HackError = 1,
-        EncryptionBreak = 2
-    }
 }
