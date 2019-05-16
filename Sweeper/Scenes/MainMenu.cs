@@ -1,22 +1,43 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media;
 
 namespace Sweeper.Scenes
 {
     public class MainMenu : MenuScene
 	{
+        private Song _mainTheme;
+
 		public MainMenu(ISceneManager sceneManager, IInputManager inputManager, ContentManager contentManager)
 			: base(sceneManager, inputManager, contentManager)
 		{		
 		}
 
-		[MenuOption("Standard Run", 0)]
+        public override void Initialise()
+        {
+            _mainTheme = ContentManager.Load<Song>("bit_shifter");
+            base.Initialise();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (MediaPlayer.State != MediaState.Playing)
+            {
+                MediaPlayer.Play(_mainTheme);
+                MediaPlayer.IsRepeating = true;
+            }
+
+            base.Update(gameTime);
+        }
+
+        [MenuOption("Standard Run", 0)]
 		public void NewGame()
 		{
             MainScene.Optons = new RunOptions { Ramp = 1, Penalties = new[] {10, 5, 3}, GameType = "standard" };
             MainScene.Difficulty = 10;
             MainScene.Score = 0;
             MainScene.HighScore = DataManager.ReadHighScore(MainScene.Optons.GameType);
+            MediaPlayer.Stop();
             SceneManager.StartScene<MainScene>();
 		}
 
@@ -27,6 +48,7 @@ namespace Sweeper.Scenes
             MainScene.Difficulty = 20;
             MainScene.Score = 0;
             MainScene.HighScore = DataManager.ReadHighScore(MainScene.Optons.GameType);
+            MediaPlayer.Stop();
             SceneManager.StartScene<MainScene>();
         }
 

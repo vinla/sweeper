@@ -37,6 +37,24 @@
 /processorParam:TextureFormat=Color
 /build:bit_coin.png
 
+#begin bit_shifter.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:bit_shifter.mp3
+
+#begin bs02.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:bs02.mp3
+
+#begin bs04.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:bs04.mp3
+
 #begin Console.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

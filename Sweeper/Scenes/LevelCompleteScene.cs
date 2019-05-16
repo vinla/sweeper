@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using Sweeper.GameObjects;
 
 namespace Sweeper.Scenes
@@ -152,6 +153,13 @@ namespace Sweeper.Scenes
             : base(mainScene, inputManager, sceneManager, contentManager)
         {
 
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (MediaPlayer.State == MediaState.Playing)
+                MediaPlayer.Stop();
+            base.Update(gameTime);
         }
 
         protected override void DrawInfo(SpriteBatch spriteBatch)

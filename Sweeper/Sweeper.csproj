@@ -70,6 +70,7 @@
     <Compile Include="Controllers\PlayerController.cs" />
     <Compile Include="Scenes\SceneModule.cs" />
     <Compile Include="GameObjects\TracePenalty.cs" />
+    <Compile Include="SoundManager.cs" />
     <Compile Include="Sweeper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

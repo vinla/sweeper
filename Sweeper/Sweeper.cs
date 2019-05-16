@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using Sweeper.Scenes;
 
 namespace Sweeper
@@ -32,6 +33,7 @@ namespace Sweeper
 			_container = _containerBuilder.Build();
 			_sceneManager.SetContainer(_container);
 			_sceneManager.StartScene<MainMenu>();
+            MediaPlayer.Volume = 0.25f;
             base.Initialize();
         }        
 

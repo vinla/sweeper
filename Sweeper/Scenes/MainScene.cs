@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using Sweeper.Controllers;
+using Microsoft.Xna.Framework.Media;
 
 namespace Sweeper.Scenes
 {
@@ -14,11 +15,13 @@ namespace Sweeper.Scenes
         private readonly IInputManager _inputManager;
         private readonly ContentManager _contentManager;
         private readonly Dictionary<string, Texture2D> _textures;
+        private readonly List<Song> _songs;
 		private readonly Stack<BaseController> _controllerStack;
 		private readonly List<FloatText> _floatingText;
         
         private Texture2D _playerSprite;
 		private Dictionary<string, SpriteFont> _fonts;
+        private int _songIndex = 0;        
      
 		public MainScene(ISceneManager sceneManager, IInputManager inputManager, ContentManager contentManager)
 		{
@@ -29,6 +32,7 @@ namespace Sweeper.Scenes
 			_floatingText = new List<FloatText>();
             _textures = new Dictionary<string, Texture2D>();
             _fonts = new Dictionary<string, SpriteFont>();
+            _songs = new List<Song>();
             
             var playerController = new PlayerController(this);
 			playerController.Initialise();
@@ -93,6 +97,20 @@ namespace Sweeper.Scenes
             _textures.Add("Cypher", _contentManager.Load<Texture2D>("cypher"));
             Player.MoveTo(Map.GetTileAt(0, 0));
             EnterTile(Map.GetTileAt(Player.Location));
+            _songs.Add(_contentManager.Load<Song>("bs04"));
+            _songs.Add(_contentManager.Load<Song>("bs02"));            
+        }
+
+        public void NextSong()
+        {
+            if (_songIndex < 0)
+                return;
+
+            _songIndex++;
+            if (_songIndex >= _songs.Count)
+                _songIndex = 0;
+
+            MediaPlayer.Play(_songs[_songIndex]);
         }
 
         public override void Draw(GameTime gameTime, GraphicsDevice graphicsDevice)
@@ -209,7 +227,23 @@ namespace Sweeper.Scenes
 				else
 					_floatingText.RemoveAt(i);
 			}
-		}
+
+            if (MediaPlayer.State != MediaState.Playing)
+            {
+                NextSong();
+            }
+        }
+
+        public void ToggleMusic()
+        {
+            if (_songIndex < 0)
+                _songIndex = 0;
+            else
+            {
+                _songIndex = -1;
+                MediaPlayer.Stop();
+            }
+        }
 
         private void LevelComplete(bool gameOver)
         {

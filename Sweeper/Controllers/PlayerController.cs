@@ -47,6 +47,18 @@ namespace Sweeper.Controllers
             Scene.Pause();
         }        
 
+        [InputAction(GameInput.ToggleMusic)]
+        public void ToggleMusic()
+        {
+            Scene.ToggleMusic();
+        }
+
+        [InputAction(GameInput.SkipTrack)]
+        public void SkipTrack()
+        {
+            Scene.NextSong();
+        }
+
 		private void MovePlayer(int x, int y)
 		{
             var target = Scene.Player.Location.Offset(x, y);

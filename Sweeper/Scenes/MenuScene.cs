@@ -11,7 +11,6 @@ namespace Sweeper
 	public abstract class MenuScene : Scene
 	{		
 		private readonly IInputManager _inputManager;
-		private readonly ContentManager _contentManager;
 		private List<Tuple<string, Action>> _menuOptions;
 		private int _selectedOption;
 		private SpriteFont _menuFont;
@@ -21,17 +20,19 @@ namespace Sweeper
 		{
 			SceneManager = sceneManager;
 			_inputManager = inputManager;
-			_contentManager = contentManager;			
+			ContentManager = contentManager;			
 			_selectedOption = 0;
             _menuOptions = new List<Tuple<string, Action>>();
 		}
 
 		public ISceneManager SceneManager { get; }
 
+        public ContentManager ContentManager { get; }
+
 		public override void Initialise()
 		{
-			_menuFont = _contentManager.Load<SpriteFont>("MainMenu");
-            _background = _contentManager.Load<Texture2D>(Background);
+			_menuFont = ContentManager.Load<SpriteFont>("MainMenu");
+            _background = ContentManager.Load<Texture2D>(Background);
             var methods = this.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public);
             _menuOptions =
                 methods

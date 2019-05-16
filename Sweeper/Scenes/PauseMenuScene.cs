@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media;
 
 namespace Sweeper.Scenes
 {
@@ -11,9 +12,17 @@ namespace Sweeper.Scenes
 		{			
 		}
 
+        public override void Update(GameTime gameTime)
+        {
+            if(MediaPlayer.State == MediaState.Playing)
+                MediaPlayer.Pause();
+            base.Update(gameTime);
+        }
+
         [MenuOption("Resume", 0)]
         public void Resume()
         {
+            MediaPlayer.Resume();
             SceneManager.EndScene();
         }
 
