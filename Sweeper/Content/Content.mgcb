@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin alert.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:alert.wav
+
 #begin ball.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -85,6 +91,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:cypher.png
+
+#begin fail.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:fail.wav
+
+#begin hack.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:hack.wav
 
 #begin hacked_node.png
 /importer:TextureImporter
@@ -224,6 +242,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:node.png
+
+#begin pickup.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:pickup.wav
 
 #begin Readout.spritefont
 /importer:FontDescriptionImporter
